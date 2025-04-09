@@ -26,20 +26,6 @@
     main {
       padding: 2em;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 1em;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 0.75em;
-      text-align: center;
-    }
-    th {
-      background-color: #2980b9;
-      color: white;
-    }
     button {
       padding: 0.7em 1.5em;
       background-color: #27ae60;
@@ -70,6 +56,19 @@
       border: 1px solid #ccc;
       border-radius: 5px;
     }
+    #results-area {
+      margin-top: 1em;
+      padding: 1em;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+    }
+    
+    .result-item {
+      padding: 0.5em;
+      margin-bottom: 0.5em;
+      border-bottom: 1px dashed #ccc;
+      font-family: monospace;
+    }
     footer {
       background: #2c3e50;
       color: white;
@@ -93,6 +92,7 @@
       <input type="text" id="formula-field" name="formula-field">
       <button type="submit" id="submit"></button>
     </form>
+    <div id="results-area"></div>
   </main>
 
   <footer>
