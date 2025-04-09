@@ -56,6 +56,31 @@
       border: 1px solid #ccc;
       border-radius: 5px;
     }
+    .input-group {
+      position: relative;
+      display: inline-block;
+    }
+    
+    .input-group input {
+      padding-right: 3em; /* ボタンのスペースを確保 */
+      height: 2.5em;
+      font-size: 1em;
+    }
+    
+    .input-group button {
+      position: absolute;
+      right: 0.3em;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 2em;
+      padding: 0 0.5em;
+      border: none;
+      background: #4caf50;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
     #results-area {
       margin-top: 1em;
       padding: 1em;
@@ -90,8 +115,10 @@
 
   <main>
     <form>
-      <input type="text" id="formula-field" name="formula-field">
-      <button type="button" id="submit"></button>
+      <div class="input-group">
+        <input type="text" id="formula-field" name="formula-field">
+        <button type="button" id="submit"></button>
+      </div>
     </form>
     <div id="results-area"></div>
   </main>
