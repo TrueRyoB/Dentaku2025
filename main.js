@@ -21,6 +21,7 @@ document.getElementById("formula-field").addEventListener("keydown", function (e
     const value = document.getElementById("formula-field").value;
     if(previousFormula !== '' && typeof value == "string" && value.trim() === "")
     {
+      event.preventDefault();
       document.getElementById("formula-field").value = previousFormula;
     }
   }
