@@ -1,5 +1,19 @@
 const maxResults = 5;
+let previousResult;
 
+document.getElementById("formula-field").addEventListener("keydown", function (event) {
+  if (event.key === "Tab") {
+      event.preventDefault();
+
+      const value = document.getElementById("formula-field").value;
+      if (previousResult !== '' && typeof value == "string" && value == "") {
+          document.getElementById("formula-field").value = previousResult;
+      }
+  }
+});
+
+
+// When a calculation form is submitted
 document.getElementById("submit").addEventListener("click", function () {
   const value = document.getElementById("formula-field").value;
   
@@ -27,6 +41,7 @@ document.getElementById("submit").addEventListener("click", function () {
   resultsArea.prepend(newResult);
 });
 
+// When results' elements are clicked
 document.getElementById("results-area").addEventListener("click", function (event) {
   if (event.target && event.target.tagName === "DIV") {
     const formula = event.target.textContent.split(' = ')[0]; // 数式部分を抽出
@@ -39,8 +54,7 @@ document.getElementById("results-area").addEventListener("click", function (even
   }
 });
 
-//let n = value.length;//if (/\d/.test(c)) 
-
+// When a tweet button is clicked
 document.getElementById("reportBtn").addEventListener("click", function () {
   const text = encodeURIComponent("#2025電卓　(開発者はこのタグを不定期に検索することでデバッグに取り掛かります！)");
   const url = `https://twitter.com/intent/tweet?text=${text}`;
