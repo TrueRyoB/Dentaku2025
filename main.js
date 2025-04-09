@@ -15,16 +15,19 @@ document.getElementById("submit").addEventListener("click", function () {
     alert("The given value contains invalid words: " + value);
     return;
   }
-
+  alert("before!");
   const resultsArea = document.getElementById("results-area");
 
   const newResult = document.createElement("div");
-  newResult.textContent = `📌${value} = ${result.value} (${getCurrentTimestamp()})`;
+  const timestamp = getCurrentTimestamp();
+  newResult.textContent = `📌${value} = ${result.value} (${timestamp})`;
+  console.log("Current timestamp:", timestamp);
   newResult.className = "result-item";
 
   if (resultsArea.children.length >= maxResults) resultsArea.removeChild(resultsArea.firstChild);
 
   resultsArea.prepend(newResult);
+  alert("after!");
 });
 
 document.getElementById("results-area").addEventListener("click", function (event) {
