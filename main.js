@@ -1,44 +1,35 @@
 const maxResults = 5;
-let previousResult;
+let previousResult = '';
+let previousFormula = '';
 
 document.getElementById("formula-field").addEventListener("keydown", function (event) {
   if (event.key === "Tab") {
       event.preventDefault();
 
       const value = document.getElementById("formula-field").value;
-      if (previousResult !== '' && typeof value == "string" && value == "") {
+      if (previousResult !== '' && typeof value === "string" && value.trim() === "") {
           document.getElementById("formula-field").value = previousResult;
       }
+  }
+  else if (event.key === "Enter") 
+  {
+    event.preventDefault();
+    readFormulaField();
+  }
+  else if (event.key === "Space")
+  {
+    const value = document.getElementById("formula-field").value;
+    if(previousFormula !== '' && typeof value == "string" && value.trim() === "")
+    {
+      document.getElementById("formula-field").value = previousFormula;
+    }
   }
 });
 
 
 // When a calculation form is submitted
 document.getElementById("submit").addEventListener("click", function () {
-  const value = document.getElementById("formula-field").value;
-  
-  if (typeof value !== "string") 
-  {
-    alert("The given value is not a string: " + value);
-    return;
-  }
-
-  const result = parseAndEvaluate(value);
-  if (!result.success)
-  {
-    alert("The given value contains invalid words: " + value);
-    return;
-  }
-  const resultsArea = document.getElementById("results-area");
-
-  const newResult = document.createElement("div");
-  const timestamp = getCurrentTimestamp();
-  newResult.textContent = `📌${value} = ${result.value} (${timestamp})`;
-  newResult.className = "result-item";
-
-  if (resultsArea.children.length >= maxResults) resultsArea.removeChild(resultsArea.lastChild);
-
-  resultsArea.prepend(newResult);
+  readFormulaField();
 });
 
 // When results' elements are clicked
@@ -80,4 +71,36 @@ function getCurrentTimestamp() {
   const minutes = String(now.getMinutes()).padStart(2, '0');
   const seconds = String(now.getSeconds()).padStart(2, '0');
   return `${hours}:${minutes}:${seconds}`;
+}
+
+// Apply a player input
+function readFormulaField() {
+  const value = document.getElementById("formula-field").value;
+  
+  if (typeof value !== "string") 
+  {
+    alert("The given value is not a string: " + value);
+    return;
+  }
+
+  previousFormula = value;
+  document.getElementById("formula-field").value = "";
+
+  const result = parseAndEvaluate(value);
+  if (!result.success)
+  {
+    alert("The given value contains invalid words: " + value);
+    return;
+  }
+  const resultsArea = document.getElementById("results-area");
+  previousResult = result.value;
+
+  const newResult = document.createElement("div");
+  const timestamp = getCurrentTimestamp();
+  newResult.textContent = `📌${value} = ${result.value} (${timestamp})`;
+  newResult.className = "result-item";
+
+  if (resultsArea.children.length >= maxResults) resultsArea.removeChild(resultsArea.lastChild);
+
+  resultsArea.prepend(newResult);
 }
