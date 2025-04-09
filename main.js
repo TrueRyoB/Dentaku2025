@@ -15,7 +15,7 @@ document.getElementById("submit").addEventListener("click", function () {
     alert("The given value contains invalid words: " + value);
     return;
   }
-  alert("calculation result: " + result);
+  alert("calculation result: " + result.value);
 });
 
 document.getElementById("reportBtn").addEventListener("click", function () {
