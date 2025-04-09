@@ -6,8 +6,6 @@ document.getElementById("submit").addEventListener("click", function () {
     alert("The given value is not a string: " + value);
     return;
   }
-  //let n = value.length;
-  //if (/\d/.test(c)) 
 
   const result = parseAndEvaluate(value);
   if (!result.success)
@@ -16,7 +14,16 @@ document.getElementById("submit").addEventListener("click", function () {
     return;
   }
   alert("calculation result: " + result.value);
+
+  const resultsArea = document.getElementById("results-area");
+
+  const newResult = document.createElement("div");
+  newResult.textContent = `📌 ${value} = ${result.value}`;
+  newResult.className = "result-item";
+
+  resultsArea.prepend(newResult);
 });
+//let n = value.length;//if (/\d/.test(c)) 
 
 document.getElementById("reportBtn").addEventListener("click", function () {
   const text = encodeURIComponent("#2025電卓　(開発者はこのタグを不定期に検索することでデバッグに取り掛かります！)");
