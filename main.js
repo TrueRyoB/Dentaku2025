@@ -3,7 +3,7 @@ let previousResult = '';
 let previousFormula = '';
 
 document.getElementById("formula-field").addEventListener("keydown", function (event) {
-  if (event.key === "Tab") {
+  if (event.key === "Space") {
       event.preventDefault();
 
       const value = document.getElementById("formula-field").value;
@@ -16,7 +16,7 @@ document.getElementById("formula-field").addEventListener("keydown", function (e
     event.preventDefault();
     readFormulaField();
   }
-  else if (event.key === "Space")
+  else if (event.key === "Tab")
   {
     event.preventDefault();
     const value = document.getElementById("formula-field").value;
