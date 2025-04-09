@@ -20,7 +20,7 @@ document.getElementById("submit").addEventListener("click", function () {
   const resultsArea = document.getElementById("results-area");
 
   const newResult = document.createElement("div");
-  div.textContent = `📌${value} = ${result.value} (${timestamp})`;
+  div.textContent = `📌${value} = ${result.value} (${getCurrentTimestamp()})`;
   newResult.className = "result-item";
 
   if (resultsArea.children.length >= maxResults) resultsArea.removeChild(resultsArea.firstChild);
