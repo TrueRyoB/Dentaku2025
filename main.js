@@ -1,3 +1,5 @@
+const maxResults = 5;
+
 document.getElementById("submit").addEventListener("click", function () {
   event.preventDefault();
   const value = document.getElementById("formula-field").value;
@@ -18,8 +20,10 @@ document.getElementById("submit").addEventListener("click", function () {
   const resultsArea = document.getElementById("results-area");
 
   const newResult = document.createElement("div");
-  newResult.textContent = `📌 ${value} = ${result.value}`;
+  div.textContent = `📌${value} = ${result.value} (${timestamp})`;
   newResult.className = "result-item";
+
+  if (resultsArea.children.length >= maxResults) resultsArea.removeChild(resultsArea.firstChild);
 
   resultsArea.prepend(newResult);
 });
@@ -31,7 +35,7 @@ document.getElementById("reportBtn").addEventListener("click", function () {
   window.open(url, "_blank");
 });
 
-
+// Parse equations and return the value (and action status)
 function parseAndEvaluate(expr) {
   if (!/^[0-9+\-*/. ]+$/.test(expr))  return { success: false };
 
@@ -41,4 +45,13 @@ function parseAndEvaluate(expr) {
   } catch (e) {
     return { success: false };
   }
+}
+
+// Get a string representing a timestamp (self-explanatory tho)
+function getCurrentTimestamp() {
+  const now = new Date();
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  return `${hours}:${minutes}:${seconds}`;
 }
