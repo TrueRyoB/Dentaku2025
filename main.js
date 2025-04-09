@@ -1,4 +1,5 @@
 document.getElementById("submit").addEventListener("click", function () {
+  event.preventDefault();
   const value = document.getElementById("formula-field").value;
   
   if (typeof value !== "string") 
