@@ -1,4 +1,4 @@
-const maxResults = 5;
+const maxResults = 3;
 let previousResult = '';
 let previousFormula = '';
 
@@ -39,7 +39,7 @@ document.getElementById("results-area").addEventListener("click", function (even
     const formula = event.target.textContent.split(' = ')[0]; // 数式部分を抽出
 
     navigator.clipboard.writeText(formula).then(() => {
-      alert(`数式 "${formula}" をコピーしました！`);
+      alert(数式 "${formula}" をコピーしました！);
     }).catch(err => {
       console.error("コピー失敗:", err);
     });
