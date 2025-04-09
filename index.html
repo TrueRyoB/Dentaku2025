@@ -8,7 +8,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>2025電卓 ver 09:37</title>
+  <title>2025電卓 ver 09:42</title>
   <script src="main.js" defer></script>
   <style>
     body {
@@ -45,10 +45,6 @@
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    label {
-      display: block;
-      margin-top: 1em;
-    }
     input, textarea {
       width: 100%;
       padding: 0.5em;
@@ -56,15 +52,19 @@
       border: 1px solid #ccc;
       border-radius: 5px;
     }
+    
     .input-group {
       position: relative;
       display: inline-block;
+      width: 100%;
     }
     
     .input-group input {
-      padding-right: 3em; /* ボタンのスペースを確保 */
+      padding-right: 3em;
       height: 2.5em;
       font-size: 1em;
+      width: 100%; /* ← ここを追加 */
+      box-sizing: border-box; /* パディング込みで幅を計算 */
     }
     
     .input-group button {
