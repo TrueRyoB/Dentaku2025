@@ -1,7 +1,6 @@
 const maxResults = 5;
 
 document.getElementById("submit").addEventListener("click", function () {
-  event.preventDefault();
   const value = document.getElementById("formula-field").value;
   
   if (typeof value !== "string") 
@@ -20,13 +19,26 @@ document.getElementById("submit").addEventListener("click", function () {
   const resultsArea = document.getElementById("results-area");
 
   const newResult = document.createElement("div");
-  div.textContent = `📌${value} = ${result.value} (${getCurrentTimestamp()})`;
+  newResult.textContent = `📌${value} = ${result.value} (${getCurrentTimestamp()})`;
   newResult.className = "result-item";
 
   if (resultsArea.children.length >= maxResults) resultsArea.removeChild(resultsArea.firstChild);
 
   resultsArea.prepend(newResult);
 });
+
+document.getElementById("results-area").addEventListener("click", function (event) {
+  if (event.target && event.target.tagName === "DIV") {
+    const formula = event.target.textContent.split(' = ')[0]; // 数式部分を抽出
+
+    navigator.clipboard.writeText(formula).then(() => {
+      alert(`数式 "${formula}" をコピーしました！`);
+    }).catch(err => {
+      console.error("コピー失敗:", err);
+    });
+  }
+});
+
 //let n = value.length;//if (/\d/.test(c)) 
 
 document.getElementById("reportBtn").addEventListener("click", function () {
