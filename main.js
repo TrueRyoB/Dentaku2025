@@ -1,6 +1,9 @@
 const maxResults = 3;
+
 let previousResult = '';
 let previousFormula = '';
+let arrRes = [];
+let arrIndex = 0;
 
 document.getElementById("formula-field").addEventListener("keydown", function (event) {
   if (event.keyCode === 32 || event.key === "Space" || event.key === " ") {
@@ -36,10 +39,15 @@ document.getElementById("submit").addEventListener("click", function () {
 // When results' elements are clicked
 document.getElementById("results-area").addEventListener("click", function (event) {
   if (event.target && event.target.tagName === "DIV") {
-    const formula = event.target.textContent.split(' = ')[0]; // 数式部分を抽出
+    
+    const positionalIndex = Array.from(document.getElementById("results-area")).indexOf(event.target);
+
+    const index = (arrIndex -positionalIndex + maxResults) % maxResults;
+    
+    const formula = arrRes[index];
 
     navigator.clipboard.writeText(formula).then(() => {
-      alert(`数式 "${formula}" をコピーしました！`);
+      alert(`数式 "${formula}" をコピーしました`);
     }).catch(err => {
       console.error("コピー失敗:", err);
     });
@@ -76,32 +84,39 @@ function getCurrentTimestamp() {
 
 // Apply a player input
 function readFormulaField() {
-  const value = document.getElementById("formula-field").value;
+  const formulaRaw = document.getElementById("formula-field").value;
   
-  if (typeof value !== "string") 
+  if (typeof formulaRaw !== "string") 
   {
     alert("The given value is not a string: " + value);
     return;
   }
 
-  previousFormula = value;
+  previousFormula = formulaRaw;
   document.getElementById("formula-field").value = "";
 
-  const result = parseAndEvaluate(value);
+  const solution = parseAndEvaluate(formulaRaw);
   if (!result.success)
   {
-    alert("The given value contains invalid words: " + value);
+    alert("The given value contains invalid words: " + formulaRaw);
     return;
   }
   const resultsArea = document.getElementById("results-area");
-  previousResult = result.value;
+  previousResult = solution.value;
 
   const newResult = document.createElement("div");
   const timestamp = getCurrentTimestamp();
-  newResult.textContent = `📌${value} = ${result.value} (${timestamp})`;
+  newResult.textContent = `📌${formulaRaw} = ${solution.value} (${timestamp})`;
   newResult.className = "result-item";
 
-  if (resultsArea.children.length >= maxResults) resultsArea.removeChild(resultsArea.lastChild);
+  if (resultsArea.children.length >= maxResults) 
+  {
+    resultsArea.removeChild(resultsArea.lastChild);
+  }
+
+  const formulaToBeCopied = `${formulaRaw} = ${solution.value}`;
 
   resultsArea.prepend(newResult);
+  arrIndex = (arrIndex + maxResults + 1) % maxResults;
+  arrRes[arrIndex] = formulaToBeCopied;
 }
