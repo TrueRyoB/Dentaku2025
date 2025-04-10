@@ -25,6 +25,7 @@
     }
     main {
       padding: 2em;
+      padding-bottom: 5em;
     }
     
     form {
@@ -91,7 +92,12 @@
       color: white;
       text-align: center;
       padding: 1em;
-      margin-top: 3em;
+      /* margin-top: 3em; */
+      position: fixed;        /* ← 常に固定！ */
+      bottom: 0;              /* ← 画面の下に配置 */
+      left: 0;
+      width: 100%;            /* ← 幅いっぱい */
+      z-index: 10;            /* ← 他の要素より上にくるように調整（必要なら） */
     }
     footer button {
       background: #000000;
