@@ -40,14 +40,14 @@ document.getElementById("submit").addEventListener("click", function () {
 document.getElementById("results-area").addEventListener("click", function (event) {
   if (event.target && event.target.tagName === "DIV") {
     
-    const positionalIndex = Array.from(document.getElementById("results-area")).indexOf(event.target);
+    const positionalIndex = Array.from(document.getElementById("results-area").children).indexOf(event.target);
 
-    const index = (arrIndex -positionalIndex + maxResults) % maxResults;
+    const index = (arrIndex - positionalIndex + maxResults) % maxResults;
     
     const formula = arrRes[index];
 
     navigator.clipboard.writeText(formula).then(() => {
-      alert(`数式 "${formula}" をコピーしました`);
+      alert(`"${positionalIndex}"にて数式 "${formula}" をコピーしました`);
     }).catch(err => {
       console.error("コピー失敗:", err);
     });
