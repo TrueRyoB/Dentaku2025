@@ -10,3 +10,10 @@
 <br>
 他の課題：<br>
 ビルドの都合上、リポジトリを分けました。[こちら](https://github.com/TrueRyoB/Nangokusoft-assignment-other/blob/main/README.md)にて詳細をご確認ください。
+
+# 戦略
+Djikstra発案のShunting Yardアルゴリズムを用いて数式をparseします。<br>
+1. StringをExpressionに変換する(の際にエラー判定その1を遂行) <br>
+2. ExpressionをPostfix notationに変換する <br>
+3. Mapを元に数式を処理する<br>
+この3段階を経ます。<br>
