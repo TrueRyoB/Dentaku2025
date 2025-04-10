@@ -23,17 +23,18 @@
       padding: 1em;
       margin-bottom:  2em;
       text-align: center;
-      position: fixed;   /* ← 常に上に固定 */
-      top: 0;             /* ← 画面の上 */
+      position: fixed;   /* 追加 */
+      top: 0;             /* 追加 */
       left: 0;
-      width: 100%;        /* ← 幅いっぱい */
-      z-index: 100;       /* ← footerより上にしてもOK */
+      width: 100%;        /* 追加 */
+      z-index: 100;       /* 追加 */
     }
 
     main {
+      flex: 1; /* 追加 */
       padding: 2em;
-      padding-bottom: 5em;
-      padding-top: 5em;
+      /*padding-bottom: 5em;
+      padding-top: 5em;*/
       background: #212121;
     }
     
@@ -86,6 +87,10 @@
       margin-top: 1em;
       padding: 1em;
       background: #0000000;
+      position: relative; /* 追加 */
+      width: 100%; /* 追加 */
+      height: 100%; /* 親要素に合わせるらしい */
+      overflow: hidden; /* 追加 */
     }
     #results-area:empty {
       display: none;
@@ -95,6 +100,7 @@
       margin-bottom: 0.5em;
       border-bottom: 1px dashed #ccc;
       font-family: monospace;
+      color: #105F4A;
     }
     footer {
       background: #2c3e50;
