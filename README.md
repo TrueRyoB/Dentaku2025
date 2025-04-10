@@ -17,3 +17,5 @@ Djikstra発案の[Shunting Yardアルゴリズム](https://compileralchemy.subst
 2. ExpressionをPostfix notationに変換する <br>
 3. Mapを元に数式を処理する<br>
 この3段階を経ます。<br>
+<br>
+その前にまともなText Editorに移行します。GitHub直接編集は効率が悪すぎるね、言うまでもない。<br>
