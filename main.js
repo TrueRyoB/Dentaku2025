@@ -4,10 +4,10 @@ let previousFormula = '';
 
 document.getElementById("formula-field").addEventListener("keydown", function (event) {
   if (event.keyCode === 32 || event.key === "Space" || event.key === " ") {
-      alert("space is detected");
-      event.preventDefault();
+
       const value = document.getElementById("formula-field").value;
       if (previousResult !== '' && typeof value === "string" && value.trim() === "") {
+          event.preventDefault();
           document.getElementById("formula-field").value = previousResult;
       }
   }
@@ -18,7 +18,6 @@ document.getElementById("formula-field").addEventListener("keydown", function (e
   }
   else if (event.key === "Tab")
   {
-    alert("tab is detected");
     event.preventDefault();
     const value = document.getElementById("formula-field").value;
     if(previousFormula !== '' && typeof value == "string" && value.trim() === "")
