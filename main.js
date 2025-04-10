@@ -1,4 +1,4 @@
-const currentVersion = "21:07";
+const currentVersion = "21:17";
 const maxResults = 3;
 
 let previousResult = '';
@@ -58,7 +58,7 @@ document.getElementById("results-area").addEventListener("click", function (even
     const formula = arrRes[index];
 
     navigator.clipboard.writeText(formula).then(() => {
-      alert(`"${positionalIndex}"にて数式 "${formula}" をコピーしました`);
+      alert(`"${formula}" をクリップボードにコピーしました`);
     }).catch(err => {
       console.error("コピー失敗:", err);
     });
