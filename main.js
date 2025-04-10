@@ -1,5 +1,5 @@
-const currentVersion = "21:17";
-const maxResults = 3;
+const currentVersion = "22:19";
+const maxResults = 10;
 
 let previousResult = '';
 let previousFormula = '';
@@ -49,7 +49,7 @@ document.getElementById("submit").addEventListener("click", function () {
 
 // When results' elements are clicked
 document.getElementById("results-area").addEventListener("click", function (event) {
-  if (event.target && event.target.tagName === "DIV") {
+  if (event.target && event.target.classname === "result-item") {
     
     const positionalIndex = Array.from(document.getElementById("results-area").children).indexOf(event.target);
 
