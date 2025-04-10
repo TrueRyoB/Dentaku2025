@@ -1,9 +1,20 @@
+const currentVersion = "21:07";
 const maxResults = 3;
 
 let previousResult = '';
 let previousFormula = '';
 let arrRes = [];
 let arrIndex = 0;
+
+// For debugging
+window.addEventListener("load", () => {
+  const storedVersion = localStorage.getItem("appVersion");
+
+  if (storedVersion && storedVersion !== currentVersion) {
+    alert(`New JS file of "${currentVersion}" is loaded!`);
+  }
+  localStorage.setItem("appVersion", currentVersion);
+});
 
 document.getElementById("formula-field").addEventListener("keydown", function (event) {
   if (event.keyCode === 32 || event.key === "Space" || event.key === " ") {
