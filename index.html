@@ -17,6 +17,13 @@
       margin: 0;
       padding: 0;
     }
+
+    .container { /*追加*/
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+    
     header {
       background: #2c3e50;
       color: white;
@@ -120,7 +127,7 @@
     }
   </style>
 </head>
-<body>
+<body class = "container">
   <header>
     <h1>計算式を入力...</h1>
   </header>
