@@ -3,7 +3,7 @@ let previousResult = '';
 let previousFormula = '';
 
 document.getElementById("formula-field").addEventListener("keydown", function (event) {
-  if (event.keyCode === 32) {
+  if (event.keyCode === 32 || event.key === "Space" || event.key === " ") {
       event.preventDefault();
 
       const value = document.getElementById("formula-field").value;
