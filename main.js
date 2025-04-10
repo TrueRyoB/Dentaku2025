@@ -84,6 +84,25 @@ function parseAndEvaluate(expr) {
   }
 }
 
+const ParseStatus = Object.freeze({
+  SUCCESS: "success",
+  INVALID_TYPE: "invalid_type",
+  INVALID_SPACE: "invalid_space",
+  UNMATCHED_SYMBOL: "unmatched_symbol",
+  EMPTY_STRING: "empty_string",
+  INVALID_CHAR: "invalid_char"
+});
+
+// helper method
+function IsNumber(char) {
+  return parseInt(char, 10) == char;
+}
+
+function IsOpSymbol(char) {
+  const operators = ["+", "-", "*", "_", "^", "%"];
+  return operators.includes(char);
+}
+
 // Get a string representing a timestamp (self-explanatory tho)
 function getCurrentTimestamp() {
   const now = new Date();
