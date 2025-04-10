@@ -96,7 +96,7 @@ function readFormulaField() {
   document.getElementById("formula-field").value = "";
 
   const solution = parseAndEvaluate(formulaRaw);
-  if (!result.success)
+  if (!solution.success)
   {
     alert("The given value contains invalid words: " + formulaRaw);
     return;
