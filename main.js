@@ -4,10 +4,10 @@ let previousFormula = '';
 
 document.getElementById("formula-field").addEventListener("keydown", function (event) {
   if (event.keyCode === 32 || event.key === "Space" || event.key === " ") {
-      event.preventDefault();
-
+      alert("space is detected");
       const value = document.getElementById("formula-field").value;
       if (previousResult !== '' && typeof value === "string" && value.trim() === "") {
+          event.preventDefault();
           document.getElementById("formula-field").value = previousResult;
       }
   }
