@@ -10,10 +10,10 @@ let arrIndex = 0;
 window.addEventListener("load", () => {
   const storedVersion = localStorage.getItem("appVersion");
 
-  if (storedVersion && storedVersion !== currentVersion) {
+  if (storedVersion === null || storedVersion !== currentVersion) {
     alert(`New JS file of "${currentVersion}" is loaded!`);
+    localStorage.setItem("appVersion", currentVersion);
   }
-  localStorage.setItem("appVersion", currentVersion);
 });
 
 document.getElementById("formula-field").addEventListener("keydown", function (event) {
