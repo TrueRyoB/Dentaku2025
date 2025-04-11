@@ -25,7 +25,7 @@ const ParseStatus = Object.freeze({
 export function parse(f) {
     let tokens = tokenize(f);
     let i = 0;
-    let ok;
+    let ok = true;
     while (i < tokens.length && ok)
     {
         [ok, i] = parseExpression(tokens, i);
@@ -153,13 +153,13 @@ function getPostfixNotation(tokens) {
         else {
             
             // 0. push an open bracket to opStack no matter what
-            if (["(", "["].includes[t]) {
+            if (["(", "["].includes(t)) {
                 opStack.push(t);
                 continue;
             }
             
             // 1. if it's a closing bracket, pop all to outStack until meeting a closing bracket
-            if ([")", "]"].includes[t]) {
+            if ([")", "]"].includes(t)) {
                 let opening = t === ")" ? "(" : "[";
                 while (opStack.length > 0 && opStack[opStack.length - 1] !== opening) outStack.push(opStack.pop());
                 if (opStack.length === 0) {
