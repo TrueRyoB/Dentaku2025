@@ -43,6 +43,7 @@ export function parse(f) {
     
     return { success: ok, result: ok === ParseStatus.SUCCESS ? res : 0 };
 }
+void parse;
 
 function validateParenthesis(tokens) {
     let stack = [];
@@ -172,6 +173,11 @@ function getPostfixNotation(tokens) {
             }
             
             // 2. compare the current token and the peek of opStack
+            if (functions.includes[t]) {
+                opStack.push(t);
+                continue;
+            }
+            
             if (! (t in map)) {
                 alert(`Error: token "${t} is not registered to the precedence map!"`);
                 return { success: ParseStatus.UNREGISTERED_TOKEN, result: null };
