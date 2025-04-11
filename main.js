@@ -1,4 +1,4 @@
-const currentVersion = "22:19";
+const currentVersion = "15:58";
 const maxResults = 10;
 
 let previousResult = '';
@@ -84,23 +84,12 @@ function parseAndEvaluate(expr) {
   }
 }
 
-const ParseStatus = Object.freeze({
-  SUCCESS: "success",
-  INVALID_TYPE: "invalid_type",
-  INVALID_SPACE: "invalid_space",
-  UNMATCHED_SYMBOL: "unmatched_symbol",
-  EMPTY_STRING: "empty_string",
-  INVALID_CHAR: "invalid_char"
-});
-
-// helper method
-function IsNumber(char) {
-  return parseInt(char, 10) == char;
-}
-
-function IsOpSymbol(char) {
-  const operators = ["+", "-", "*", "_", "^", "%"];
-  return operators.includes(char);
+function parseCustom(expr) {
+  import { parse } from './calc.js';
+  let log;
+  let res;
+  [log, res] = parse(expr);
+  return [success: log === "success", value: res];
 }
 
 // Get a string representing a timestamp (self-explanatory tho)
@@ -125,7 +114,8 @@ function readFormulaField() {
   previousFormula = formulaRaw;
   document.getElementById("formula-field").value = "";
 
-  const solution = parseAndEvaluate(formulaRaw);
+  const solution = parseCustom(formulaRaw);
+  
   if (!solution.success)
   {
     alert("The given value contains invalid words: " + formulaRaw);
