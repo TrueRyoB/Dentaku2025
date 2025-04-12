@@ -1,5 +1,3 @@
-const currentVersion = "16:50";
-
 // For debugging
 window.addEventListener("load", () => {
   const storedVersion = localStorage.getItem("appVersion_parse");
