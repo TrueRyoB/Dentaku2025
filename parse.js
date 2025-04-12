@@ -6,7 +6,7 @@ window.addEventListener("load", () => {
 
   if (storedVersion === null || storedVersion !== currentVersion) {
     alert(`New parse.js file of "${currentVersion}" is loaded!`);
-    localStorage.setItem("appVersion", currentVersion);
+    localStorage.setItem("appVersion_parse", currentVersion);
   }
 });
 
