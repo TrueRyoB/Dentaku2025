@@ -1,13 +1,3 @@
-// For debugging
-window.addEventListener("load", () => {
-  const storedVersion = localStorage.getItem("appVersion_parse");
-
-  if (storedVersion === null || storedVersion !== currentVersion) {
-    alert(`New parse.js file of "${currentVersion}" is loaded!`);
-    localStorage.setItem("appVersion_parse", currentVersion);
-  }
-});
-
 const functions = ["sin", "cos", "tan", "asin", "acos", "atan", "log", "ln"];
 
 const map = {
