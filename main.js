@@ -72,12 +72,17 @@ document.getElementById("reportBtn").addEventListener("click", function () {
   window.open(url, "_blank");
 });
 
+// async function parseCustom(expr) {
+//   const { parse } = await import('./calc.js'); // Dynamically import the module
+//   let log;
+//   let res;
+//   [log, res] = parse(expr);
+//   return { success: log === "success", value: res }; // Corrected return syntax to an object
+// }
+
 async function parseCustom(expr) {
-  const { parse } = await import('./calc.js'); // Dynamically import the module
-  let log;
-  let res;
-  [log, res] = parse(expr);
-  return { success: log === "success", value: res }; // Corrected return syntax to an object
+  await new Promise(resolve => setTimeout(resolve, 10));
+  return { success: log === "success", value: expr };
 }
 
 // Get a string representing a timestamp (self-explanatory tho)
