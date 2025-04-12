@@ -1,4 +1,4 @@
-const currentVersion = "love yourself";
+const currentVersion = "00:25";
 const maxResults = 10;
 
 let previousResult = '';
@@ -17,7 +17,7 @@ window.addEventListener("load", () => {
 });
 
 document.getElementById("formula-field").addEventListener("keydown", function (event) {
-  if (event.keyCode === 32 || event.key === "Space" || event.key === " ") {
+  if (event.key === "Space" || event.key === " ") {
 
       const value = document.getElementById("formula-field").value;
       if (previousResult !== '' && typeof value === "string" && value.trim() === "") {
@@ -28,7 +28,7 @@ document.getElementById("formula-field").addEventListener("keydown", function (e
   else if (event.key === "Enter") 
   {
     event.preventDefault();
-    await readFormulaField(); //TODO:
+    void readFormulaField();
   }
   else if (event.key === "Tab")
   {
@@ -71,18 +71,6 @@ document.getElementById("reportBtn").addEventListener("click", function () {
   const url = `https://twitter.com/intent/tweet?text=${text}`;
   window.open(url, "_blank");
 });
-
-// Parse equations and return the value (and action status)
-function parseAndEvaluate(expr) {
-  if (!/^[0-9+\-*/. ]+$/.test(expr))  return { success: false };
-
-  try {
-    let result = eval(expr);
-    return { success: true, value: result };
-  } catch (e) {
-    return { success: false };
-  }
-}
 
 async function parseCustom(expr) {
   const { parse } = await import('./calc.js'); // Dynamically import the module
