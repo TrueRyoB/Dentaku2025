@@ -28,7 +28,7 @@ document.getElementById("formula-field").addEventListener("keydown", function (e
   else if (event.key === "Enter") 
   {
     event.preventDefault();
-    readFormulaField();
+    await readFormulaField(); //TODO:
   }
   else if (event.key === "Tab")
   {
@@ -43,13 +43,13 @@ document.getElementById("formula-field").addEventListener("keydown", function (e
 
 
 // When a calculation form is submitted
-document.getElementById("submit").addEventListener("click", function () {
-  readFormulaField();
+document.getElementById("submit").addEventListener("click", async function () {
+  await readFormulaField();
 });
 
 // When results' elements are clicked
 document.getElementById("results-area").addEventListener("click", function (event) {
-  if (event.target && event.target.classname === "result-item") {
+  if (event.target && event.target.className === "result-item") {
     
     const positionalIndex = Array.from(document.getElementById("results-area").children).indexOf(event.target);
 
@@ -84,12 +84,12 @@ function parseAndEvaluate(expr) {
   }
 }
 
-function parseCustom(expr) {
-  import { parse } from './calc.js';
+async function parseCustom(expr) {
+  const { parse } = await import('./calc.js'); // Dynamically import the module
   let log;
   let res;
   [log, res] = parse(expr);
-  return [success: log === "success", value: res];
+  return { success: log === "success", value: res }; // Corrected return syntax to an object
 }
 
 // Get a string representing a timestamp (self-explanatory tho)
@@ -102,7 +102,7 @@ function getCurrentTimestamp() {
 }
 
 // Apply a player input
-function readFormulaField() {
+async function readFormulaField() {
   const formulaRaw = document.getElementById("formula-field").value;
   
   if (typeof formulaRaw !== "string") 
@@ -114,7 +114,7 @@ function readFormulaField() {
   previousFormula = formulaRaw;
   document.getElementById("formula-field").value = "";
 
-  const solution = parseCustom(formulaRaw);
+  const solution =await parseCustom(formulaRaw);
   
   if (!solution.success)
   {
