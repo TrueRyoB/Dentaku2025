@@ -39,14 +39,12 @@ function parse(f) {
     
     if (!validateParenthesis(tokens)) return { success: ParseStatus.INVALID_PARENTHESIS, value: 0 };
     
-    let post;
-    [ok, post] = getPostfixNotation(tokens);
-    if (ok !== ParseStatus.SUCCESS) return { success: ok, value: 0 };
+    let post = getPostfixNotation(tokens);
+    if (post.success !== ParseStatus.SUCCESS) return { success: post.success, value: 0 };
     
-    let res;
-    [res, ok] = evaluatePostfix(post);
+    let res = evaluatePostfix(post.result);
     
-    return { success: ok === ParseStatus.SUCCESS ? true : ok, value: ok === ParseStatus.SUCCESS ? res : 0 };
+    return { success: res.success === ParseStatus.SUCCESS ? true : res.success, value: res.success === ParseStatus.SUCCESS ? res.result : 0 };
 }
 
 function validateParenthesis(tokens) {
