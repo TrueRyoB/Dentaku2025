@@ -1,4 +1,4 @@
-const currentVersion = "17:11";
+const currentVersion = "17:20";
 const functions = ["sin", "cos", "tan", "asin", "acos", "atan", "log", "ln"];
 
 const map = {
