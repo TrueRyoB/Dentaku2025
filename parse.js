@@ -1,4 +1,4 @@
-const currentVersion = "16:47";
+const currentVersion = "16:50";
 
 // For debugging
 window.addEventListener("load", () => {
@@ -21,7 +21,6 @@ const map = {
     "**" : 3,
 };
 
-
 const isOperatorSymbol = (token) => ["+", "-", "*", "/", "**", "%"].includes(token);
 
 const ParseStatus = Object.freeze({
@@ -40,7 +39,7 @@ const ParseStatus = Object.freeze({
     window.parseLib.parse = parse;
 })();
 
-export function parse(f) {
+function parse(f) {
     let tokens = tokenize(f);
     let i = 0;
     let ok = true;
@@ -230,7 +229,7 @@ function parseExpression(tokens, i) {
     }
     
     // Pairs
-    if (isParenthesis(tokens[i]) || isSquareBracket(tokens[i])){ //TODO: 同様に過去のデータ次第でtrueかどうかが変わる場合の実装方法を検討する
+    if (isParenthesis(tokens[i]) || isSquareBracket(tokens[i])){
         return [true, i + 1];
     }
     
