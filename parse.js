@@ -1,4 +1,4 @@
-const currentVersion = "17:03";
+const currentVersion = "17:11";
 const functions = ["sin", "cos", "tan", "asin", "acos", "atan", "log", "ln"];
 
 const map = {
@@ -176,7 +176,7 @@ function getPostfixNotation(tokens) {
             }
             
             // 2. compare the current token and the peek of opStack
-            if (functions.includes[t]) {
+            if (functions.includes(t)) {
                 opStack.push(t);
                 continue;
             }
