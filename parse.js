@@ -1,4 +1,4 @@
-const currentVersion = "17:59";
+const currentVersion = "18:03";
 const functions = ["sin", "cos", "tan", "asin", "acos", "atan", "log", "ln"];
 
 const map = {
@@ -62,8 +62,8 @@ function parse(f) {
     if (!validateParenthesis(tokens)) return { success: ParseStatus.INVALID_PARENTHESIS, value: 0 };
     
     let post = getPostfixNotation(tokens);
-    console.log(post.join(""));
     if (post.success !== ParseStatus.SUCCESS) return { success: post.success, value: 0 };
+    console.log(post.result.join(""));
     
     let res = evaluatePostfix(post.result);
     
