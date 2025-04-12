@@ -1,4 +1,4 @@
-const currentVersion = "16:37";
+const currentVersion = "love yourself";
 const maxResults = 10;
 
 let previousResult = '';
