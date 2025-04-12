@@ -90,9 +90,6 @@ function readFormulaField() {
     return;
   }
 
-  previousFormula = formulaRaw;
-  document.getElementById("formula-field").value = "";
-
   const solution = window.parseLib.parse(formulaRaw);
   
   if (solution.success !== ParseStatus.SUCCESS)
@@ -100,6 +97,8 @@ function readFormulaField() {
     alert("Error occured: " + solution.success);
     return;
   }
+  document.getElementById("formula-field").value = "";
+  
   const resultsArea = document.getElementById("results-area");
   previousResult = solution.value;
 
@@ -118,4 +117,5 @@ function readFormulaField() {
   resultsArea.prepend(newResult);
   arrIndex = (arrIndex + maxResults + 1) % maxResults;
   arrRes[arrIndex] = formulaToBeCopied;
+  previousFormula = formulaRaw;
 }
