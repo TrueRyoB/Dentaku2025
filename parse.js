@@ -1,4 +1,4 @@
-const currentVersion = "18:03";
+const currentVersion = "18:10";
 const functions = ["sin", "cos", "tan", "asin", "acos", "atan", "log", "ln"];
 
 const map = {
@@ -63,7 +63,7 @@ function parse(f) {
     
     let post = getPostfixNotation(tokens);
     if (post.success !== ParseStatus.SUCCESS) return { success: post.success, value: 0 };
-    console.log(post.result.join(""));
+    console.log(post.result.join(" "));
     
     let res = evaluatePostfix(post.result);
     
@@ -165,7 +165,7 @@ function getPostfixNotation(tokens) {
             }
             
             // 3. Push to the appropriate stack //TODO: 不安
-            let shouldPushToOutput = opStack.length > 0 && map[t] <= map[opStack[opStack.length - 1]];
+            let shouldPushToOutput = opStack.length > 0 && map[t] >= map[opStack[opStack.length - 1]];
             
             if (shouldPushToOutput) outStack.push(t);
             else opStack.push(t);
