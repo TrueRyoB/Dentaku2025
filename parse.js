@@ -1,4 +1,4 @@
-const currentVersion = "17:22";
+const currentVersion = "17:38";
 const functions = ["sin", "cos", "tan", "asin", "acos", "atan", "log", "ln"];
 
 const map = {
@@ -8,6 +8,22 @@ const map = {
     "/" : 2,
     "%" : 2,
     "**" : 3,
+};
+
+const operators = {
+    "+": { arity: 2, fn: (a, b) => a + b },
+    "-": { arity: 2, fn: (a, b) => a - b },
+    "*": { arity: 2, fn: (a, b) => a * b },
+    "/": { arity: 2, fn: (a, b) => a / b },
+    "%": { arity: 2, fn: (a, b) => ((a % b) + b) % b },
+    "**": { arity: 2, fn: (a, b) => a ** b }, //TODO: **のassociativityを考慮して変更する
+    "sin": { arity: 1, fn: (a) => Math.sin(a) },
+    "cos": { arity: 1, fn: (a) => Math.cos(a) },
+    "tan": { arity: 1, fn: (a) => Math.tan(a) },
+    "asin": { arity: 1, fn: (a) => Math.asin(a) },
+    "acos": { arity: 1, fn: (a) => Math.acos(a) },
+    "atan": { arity: 1, fn: (a) => Math.atan(a) },
+    "ln": { arity: 1, fn: (a) => Math.log(a) },
 };
 
 const isOperatorSymbol = (token) => ["+", "-", "*", "/", "**", "%"].includes(token);
@@ -70,6 +86,7 @@ function evaluatePostfix (post) {
     let numStack = [];
     for(let i = 0; i < post.length; i++) {
         let t = post[i];
+        
         if (isNumber(t)) {
             t = parseFloat(t);
             numStack.push(t);
@@ -79,63 +96,21 @@ function evaluatePostfix (post) {
             else return { success: ParseStatus.UNREGISTERED_TOKEN, result: 0 };
             numStack.push(t);
         } else {
-
-            if (numStack.length < 2) return { success: ParseStatus.UNPAIRED_OPERANT, result: 0 };
-
-            let v2 = numStack.pop();
-            let v1 = numStack.pop();
-
-            switch (post[i]) {
-                case "+":
-                    numStack.push(v1 + v2);
-                    break;
-                case "-":
-                    numStack.push(v1 - v2);
-                    break;
-                case "*":
-                    numStack.push(v1 * v2);
-                    break;
-                case "/":
-                    numStack.push(v1 / v2);
-                    break;
-                case "%":
-                    numStack.push((v1 % v2 + v2) % v2);
-                    break;
-                case "**": //TODO: associativityを考慮して変更する
-                    numStack.push(v1 ** v2);
-                    break;
-                case "ln":
-                    numStack.push(v1);
-                    numStack.push(Math.log(v2));
-                    break;
-                case "sin":
-                    numStack.push(v1);
-                    numStack.push(Math.sin(v2));
-                    break;
-                case "cos":
-                    numStack.push(v1);
-                    numStack.push(Math.cos(v2));
-                    break;
-                case "tan":
-                    numStack.push(v1);
-                    numStack.push(Math.tan(v2));
-                    break;
-                case "asin":
-                    numStack.push(v1);
-                    numStack.push(Math.asin(v2));
-                    break;
-                case "acos":
-                    numStack.push(v1);
-                    numStack.push(Math.acos(v2));
-                    break;
-                case "atan":
-                    numStack.push(v1);
-                    numStack.push(Math.atan(v2));
-                    break;
-                default:
-                    alert(`Error: unrecognized token ${post[i]}!"`);
-                    return { success: ParseStatus.UNREGISTERED_TOKEN, result: 0 };
+            
+            let op = operators[t];
+            if (!op) {
+                alert(`Error: unrecognized token "${t}"!`);
+                return { success: ParseStatus.UNREGISTERED_TOKEN, result: 0 };
             }
+
+            if (numStack.length < op.arity) return { success: ParseStatus.UNPAIRED_OPERANT, result: 0 };
+
+            
+            const args = [];
+            for (let j = 0; j < op.arity; j++) args.unshift(numStack.pop());
+            
+            const result = op.fn(...args);
+            numStack.push(result);
         }
     }
     if(numStack.length > 1) return { success: ParseStatus.UNPAIRED_OPERANT, result: 0 };
