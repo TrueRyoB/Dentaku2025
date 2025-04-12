@@ -1,4 +1,3 @@
-const currentVersion = "16:55";
 const maxResults = 10;
 
 let previousResult = '';
