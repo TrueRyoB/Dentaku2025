@@ -7,11 +7,11 @@ let arrIndex = 0;
 
 // For debugging
 window.addEventListener("load", () => {
-  const storedVersion = localStorage.getItem("appVersion_main");
+  const storedVersion = localStorage.getItem("appVersion");
 
   if (storedVersion === null || storedVersion !== currentVersion) {
-    alert(`New main.js file of "${currentVersion}" is loaded!`);
-    localStorage.setItem("appVersion_main", currentVersion);
+    alert(`New JS file of "${currentVersion}" is loaded!`);
+    localStorage.setItem("appVersion", currentVersion);
   }
 });
 
@@ -95,10 +95,9 @@ function readFormulaField() {
 
   const solution = window.parseLib.parse(formulaRaw);
   
-  if (!solution.success)
+  if (solution.success !== ParseStatus.SUCCESS)
   {
     alert("Error occured: " + solution.success);
-    // alert("The given value contains invalid words: " + formulaRaw);
     return;
   }
   const resultsArea = document.getElementById("results-area");
