@@ -1,4 +1,4 @@
-const currentVersion = "00:25";
+const currentVersion = "hid crazy stuff";
 const maxResults = 10;
 
 let previousResult = '';
@@ -82,7 +82,7 @@ document.getElementById("reportBtn").addEventListener("click", function () {
 
 async function parseCustom(expr) {
   await new Promise(resolve => setTimeout(resolve, 10));
-  return { success: log === "success", value: expr };
+  return { success: true, value: expr };
 }
 
 // Get a string representing a timestamp (self-explanatory tho)
