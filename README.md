@@ -12,10 +12,4 @@
 ビルドの都合上、リポジトリを分けました。[こちら](https://github.com/TrueRyoB/Nangokusoft-assignment-other/blob/main/README.md)にて詳細をご確認ください。
 
 # 戦略
-Djikstra発案の[Shunting Yardアルゴリズム](https://compileralchemy.substack.com/p/step-by-step-parsing-of-mathematical)を用いて数式をparseします。<br>
-1. StringをExpressionに変換する(の際にエラー判定その1を遂行) <br>
-2. ExpressionをPostfix notationに変換する <br>
-3. Mapを元に数式を処理する<br>
-この3段階を経ます。<br>
-<br>
-その前にまともなText Editorに移行します。GitHub直接編集は効率が悪すぎるね、言うまでもない。<br>
+JSファイル同期に失敗<br>
