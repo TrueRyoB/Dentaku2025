@@ -9,6 +9,7 @@ const map = {
     "**" : 3,
 };
 
+
 const isOperatorSymbol = (token) => ["+", "-", "*", "/", "**", "%"].includes(token);
 
 const ParseStatus = Object.freeze({
@@ -22,6 +23,11 @@ const ParseStatus = Object.freeze({
     FAILURE: "failure",
 });
 
+(function() {
+    window.parseLib = window.parseLib || {};
+    window.parseLib.parse = parse;
+})();
+
 export function parse(f) {
     let tokens = tokenize(f);
     let i = 0;
@@ -30,20 +36,19 @@ export function parse(f) {
     {
         [ok, i] = parseExpression(tokens, i);
     }
-    if (!ok) return { success: ParseStatus.INVALID_EXPRESSION, result: 0 };
+    if (!ok) return { success: ParseStatus.INVALID_EXPRESSION, value: 0 };
     
-    if (!validateParenthesis(tokens)) return { success: ParseStatus.INVALID_PARENTHESIS, result: 0 };
+    if (!validateParenthesis(tokens)) return { success: ParseStatus.INVALID_PARENTHESIS, value: 0 };
     
     let post;
     [ok, post] = getPostfixNotation(tokens);
-    if (ok !== ParseStatus.SUCCESS) return { success: ok, result: 0 };
+    if (ok !== ParseStatus.SUCCESS) return { success: ok, value: 0 };
     
     let res;
     [res, ok] = evaluatePostfix(post);
     
-    return { success: ok, result: ok === ParseStatus.SUCCESS ? res : 0 };
+    return { success: ok === ParseStatus.SUCCESS ? true : ok, value: ok === ParseStatus.SUCCESS ? res : 0 };
 }
-void parse;
 
 function validateParenthesis(tokens) {
     let stack = [];
