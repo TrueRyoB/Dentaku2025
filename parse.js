@@ -1,4 +1,4 @@
-const currentVersion = "17:38";
+const currentVersion = "17:55";
 const functions = ["sin", "cos", "tan", "asin", "acos", "atan", "log", "ln"];
 
 const map = {
@@ -24,6 +24,11 @@ const operators = {
     "acos": { arity: 1, fn: (a) => Math.acos(a) },
     "atan": { arity: 1, fn: (a) => Math.atan(a) },
     "ln": { arity: 1, fn: (a) => Math.log(a) },
+};
+
+const constants = {
+    "π": { value : Math.PI },
+    "e" : { value : Math.E },
 };
 
 const isOperatorSymbol = (token) => ["+", "-", "*", "/", "**", "%"].includes(token);
@@ -55,6 +60,8 @@ function parse(f) {
     if (!ok) return { success: ParseStatus.INVALID_EXPRESSION, value: 0 };
     
     if (!validateParenthesis(tokens)) return { success: ParseStatus.INVALID_PARENTHESIS, value: 0 };
+
+    console.log(tokens.join(""));
     
     let post = getPostfixNotation(tokens);
     if (post.success !== ParseStatus.SUCCESS) return { success: post.success, value: 0 };
@@ -91,10 +98,7 @@ function evaluatePostfix (post) {
             t = parseFloat(t);
             numStack.push(t);
         } else if (isConstant(t)) {
-            if (t === "π") t = Math.PI;
-            else if (t === "e") t = Math.E;
-            else return { success: ParseStatus.UNREGISTERED_TOKEN, result: 0 };
-            numStack.push(t);
+            numStack.push(constants[t].value);
         } else {
             
             let op = operators[t];
@@ -325,4 +329,4 @@ const isSquareBracket = (token) => ["[", "]"].includes(token);
 const isParenthesis = (token) => ["(", ")"].includes(token);
 const isSpace = (token) => /^\s+$/.test(token);
 const isDigit = (token) => /^\d+$/.test(token);
-const isConstant = (token) => ["π", "e"].includes(token);
+const isConstant = (token) => token in constants;
