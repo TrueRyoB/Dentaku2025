@@ -1,4 +1,4 @@
-const currentVersion = "18:10";
+const currentVersion = "18:49";
 const functions = ["sin", "cos", "tan", "asin", "acos", "atan", "log", "ln"];
 
 const map = {
@@ -164,11 +164,14 @@ function getPostfixNotation(tokens) {
                 return { success: ParseStatus.UNREGISTERED_TOKEN, result: null };
             }
             
-            // 3. Push to the appropriate stack //TODO: 不安
-            let shouldPushToOutput = opStack.length > 0 && map[t] >= map[opStack[opStack.length - 1]];
+            // 3. Push to the appropriate stack //TODO: 間違った設計かも
+            // let shouldPushToOutput = opStack.length > 0 && map[t] >= map[opStack[opStack.length - 1]];
+            // if (shouldPushToOutput) outStack.push(t);
+            // else opStack.push(t);
             
-            if (shouldPushToOutput) outStack.push(t);
-            else opStack.push(t);
+            let shouldPushPrevOp = opStack.length > 0 && map[opStack[opStack.length-1]] >= map[t];
+            if (shouldPushPrevOp) outStack.push(opStack.pop());
+            opStack.push(t);
         }
     }
     
