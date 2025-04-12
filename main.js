@@ -1,4 +1,4 @@
-const currentVersion = "hid crazy stuff";
+const currentVersion = "01:07";
 const maxResults = 10;
 
 let previousResult = '';
@@ -28,7 +28,7 @@ document.getElementById("formula-field").addEventListener("keydown", function (e
   else if (event.key === "Enter") 
   {
     event.preventDefault();
-    void readFormulaField();
+    readFormulaField();
   }
   else if (event.key === "Tab")
   {
@@ -72,19 +72,6 @@ document.getElementById("reportBtn").addEventListener("click", function () {
   window.open(url, "_blank");
 });
 
-// async function parseCustom(expr) {
-//   const { parse } = await import('./calc.js'); // Dynamically import the module
-//   let log;
-//   let res;
-//   [log, res] = parse(expr);
-//   return { success: log === "success", value: res }; // Corrected return syntax to an object
-// }
-
-async function parseCustom(expr) {
-  await new Promise(resolve => setTimeout(resolve, 10));
-  return { success: true, value: expr };
-}
-
 // Get a string representing a timestamp (self-explanatory tho)
 function getCurrentTimestamp() {
   const now = new Date();
@@ -95,7 +82,7 @@ function getCurrentTimestamp() {
 }
 
 // Apply a player input
-async function readFormulaField() {
+function readFormulaField() {
   const formulaRaw = document.getElementById("formula-field").value;
   
   if (typeof formulaRaw !== "string") 
@@ -107,11 +94,12 @@ async function readFormulaField() {
   previousFormula = formulaRaw;
   document.getElementById("formula-field").value = "";
 
-  const solution =await parseCustom(formulaRaw);
+  const solution = window.parseLib.parse(formulaRaw);
   
   if (!solution.success)
   {
-    alert("The given value contains invalid words: " + formulaRaw);
+    alert("Error occured: " + solution.success);
+    // alert("The given value contains invalid words: " + formulaRaw);
     return;
   }
   const resultsArea = document.getElementById("results-area");
