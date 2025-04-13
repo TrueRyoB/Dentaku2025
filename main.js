@@ -1,5 +1,5 @@
 const maxResults = 10;
-const saveKey = "history";
+const saveKey = "formulas";
 const borderChar = ";";
 
 let previousResult = '';
