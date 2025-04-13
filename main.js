@@ -15,6 +15,15 @@ window.addEventListener("load", () => {
   }
 });
 
+document.addEventListener("keydown", function(event) {
+  const isBodyFocused = document.activeElement === document.body;
+
+  if (isBodyFocused && event.key === "Tab") {
+    event.preventDefault();
+    document.getElementById("formula-field").focus();
+  }
+});
+
 document.getElementById("formula-field").addEventListener("keydown", function (event) {
   if (event.key === "Space" || event.key === " ") {
 
@@ -36,6 +45,15 @@ document.getElementById("formula-field").addEventListener("keydown", function (e
     if(previousFormula !== '' && typeof value == "string" && value.trim() === "")
     {
       document.getElementById("formula-field").value = previousFormula;
+    }
+  }
+  else if (event.key === "I" || event.key === "i") 
+  {
+    let value = document.getElementById("formula-field").value;
+    if (["p", "P"].includes(value[value.length - 1])) {
+      event.preventDefault();
+      value = value.slice(0, value.length - 2) + "π";
+      document.getElementById("formula-field").value = value;
     }
   }
 });
