@@ -115,6 +115,7 @@ function readFormulaField() {
   if (["clear", "c"].includes(formulaRaw.trim().toLowerCase())) {
     deleteAllResults();
     updateURLOnRead();
+    document.getElementById("formula-field").value = "";
     return;
   }
 
@@ -143,6 +144,7 @@ function updateURLOnRead() {
 
 function deleteAllResults() {
   const resultsArea = document.getElementById("results-area");
+  arrRes = [];
   resultsArea.innerHTML = "";
 }
 
