@@ -157,14 +157,14 @@ function pushResult(formula, solution, timestamp) {
 
 function loadResultOnRead() {
   let key = loadFromHash(saveKey);
-  if(key === null || typeof key !== "string" || key === "") return;
+  if(key === null || typeof key !== "string" || key.trim() === "") return;
   
   let count = 0,  n = key.length, l = 0, r = 0, e = 0;
   
   const timestamp = "(??:??:??)";
   
   while (count <= maxResults && r < n) {
-    while (key[r] !== borderChar) {
+    while (r < n && key[r] !== borderChar) {
       if (key[r] === "=") e = r; 
       ++r;
     }
@@ -172,6 +172,7 @@ function loadResultOnRead() {
     const fm = key.slice(l, e);
     const sl = key.slice(e+1, r);
     l = r;
+    ++count;
     
     pushResult(fm, sl, timestamp);
   }
