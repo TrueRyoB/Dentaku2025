@@ -141,7 +141,10 @@ function readFormulaField() {
   let urlStr = "";
   for(let i=0; i < maxResults; ++i) {
     const ele = arrRes[(arrIndex+i)%maxResults];
-    if (ele != null) urlStr += ele;
+    if (ele != null) {
+      urlStr += ele;
+      urlStr += "\s";
+    }
   }
   saveToHash(saveKey, urlStr);
 
