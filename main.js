@@ -21,12 +21,18 @@ if(typeof window !== "undefined") {
 
 
   document.addEventListener("keydown", function (event) {
-    const activeEl = document.activeElement;
-    const isTextField = activeEl instanceof HTMLInputElement || activeEl instanceof HTMLTextAreaElement;
+    const isTextField = document.activeElement instanceof HTMLInputElement || document.activeElement instanceof HTMLTextAreaElement;
     
-    if (!isTextField && event.key === "Tab") {
+    if (event.key === "Tab") {
       event.preventDefault();
-      document.getElementById("formula-field").focus();
+      if (isTextField) {
+        const value = document.getElementById("formula-field").value;
+        if (previousFormula !== '' && typeof value == "string" && value.trim() === "") {
+          document.getElementById("formula-field").value = previousFormula;
+        }
+      } else {
+        document.getElementById("formula-field").focus();
+      }
     }
   });
 
@@ -40,12 +46,6 @@ if(typeof window !== "undefined") {
     } else if (event.key === "Enter") {
       event.preventDefault();
       readFormulaField();
-    } else if (event.key === "Tab") {
-      event.preventDefault();
-      const value = document.getElementById("formula-field").value;
-      if (previousFormula !== '' && typeof value == "string" && value.trim() === "") {
-        document.getElementById("formula-field").value = previousFormula;
-      }
     } else if (["I", "i"].includes(event.key)) {
       const input = document.getElementById("formula-field");
 
@@ -160,7 +160,7 @@ function pushResult(formula, solution, timestamp, shouldAnimate = false) {
   arrIndex = (arrIndex + maxResults + 1) % maxResults;
   arrRes[arrIndex] = `${formula} = ${solution}`;
   if (shouldAnimate) {
-    animateColor(newResult, "#FFD54F", "#68FFE5", 2000);
+    animateColor(newResult, "#66F0D9", "#68FFE5", 2000);
   }
 }
 
