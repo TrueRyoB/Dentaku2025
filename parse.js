@@ -1,21 +1,62 @@
 const testcase = [
-    // "",
-    // ")",
-    // "(",
-    // "()",
-    // "(())",
-    // "(0)(())",
-    // "sin(10+10)",
-    // "((1))asin((1))",
-    // "sin(asin(0))",
-    // "sin(sin(sin(sin(0))))",
-    // "50 cos(50 cos(50 cos(π)))",
-    // "ln30",
-    // "log[10](30)",
-    // "-30e-2 + 10e",
+    ["log(100)", { solution: "2", isValid: true }],
+    ["sin(π/2)", { solution: "1", isValid: true }],
+    ["cos(0)", { solution: "1", isValid: true }],
+    ["tan(π / 4)", { solution: "1", isValid: true }],
+    ["asin(1)", { solution: "π / 2", isValid: true }],
+    ["acos(0)", { solution: "π / 2", isValid: true }],
+    ["atan(1)", { solution: "π / 4", isValid: true }],
+    ["ln(e)", { solution: "1", isValid: true }],
+    ["log(1000, 10)", { solution: "3", isValid: true }],
+    ["log(8, 2)", { solution: "3", isValid: true }],
+    ["ln(e^2)", { solution: "2", isValid: true }],
+    ["2 + 3 * (4 - 1)", { solution: "11", isValid: true }],
+    ["log(100, 10)", { solution: "2", isValid: true }],
+    //["-30e-2 + 10e", { solution: "-0.3+10e", isValid: true }], 指数表記のtestcaseを増やしたい
+    ["((1))acos((0))", { solution: "π", isValid: true }],
+    ["", { solution: null, isValid: false }],
+    [")", { solution: null, isValid: false }],
+    ["(", { solution: null, isValid: false }],
+    ["()", { solution: null, isValid: false }],
+    ["(())", { solution: null, isValid: false }],
+    ["(0)(())", { solution: null, isValid: false }],
+    ["sin(asin(0))", { solution: null, isValid: false }],
+    ["sin(sin(sin(sin(0))))", { solution: null, isValid: false }],
+    ["50 cos(50 cos(50 cos(π)))", { solution: null, isValid: false }],
+    ["ln30", { solution: null, isValid: false }],
+    ["π +", { solution: null, isValid: false }],
+    ["+ 2", { solution: null, isValid: false }],
+    ["log()", { solution: null, isValid: false }],
+    ["sin)", { solution: null, isValid: false }],
+    ["(e + π", { solution: null, isValid: false }],
+    ["log(100, )", { solution: null, isValid: false }],
+    ["ln()", { solution: null, isValid: false }],
+    ["cos((", { solution: null, isValid: false }],
+    ["atan(1, 2)", { solution: null, isValid: false }],
+    ["abc **", { solution: null, isValid: false }],
+    ["5 + * 2", { solution: null, isValid: false }],
+    ["++e", { solution: null, isValid: false }],
+    ["(2 + 3))", { solution: null, isValid: false }],
+    ["tan)", { solution: null, isValid: false }],
+    ["log(10 100)", { solution: null, isValid: false }],
+    ["sin(π", { solution: null, isValid: false }],
+    ["*π", { solution: null, isValid: false }],
+    ["2 ** ** 3", { solution: null, isValid: false }],
+    ["acos)", { solution: null, isValid: false }],
+    ["log(10, 100, 5)", { solution: null, isValid: false }],
+    ["sin(cos(π)", { solution: null, isValid: false }],
+    ["log(ln())", { solution: null, isValid: false }],
+    ["atan(1 + tan(π / 4)", { solution: null, isValid: false }],
+    ["log(log(100, ), 10)", { solution: null, isValid: false }],
+    ["sin((π + e / 2", { solution: null, isValid: false }],
+    ["ln(abs(sin(x))", { solution: null, isValid: false }],
+    ["log(log(log(1000))", { solution: null, isValid: false }],
+    ["sin(x + cos(y + tan(z))", { solution: null, isValid: false }],
+    ["acos(cos(asin(sin(π / 2))))))", { solution: null, isValid: false }],
+    ["log(8, log(1000, 10", { solution: null, isValid: false }]
 ];
 
-const currentVersion = "01:37";
+const currentVersion = "19:44";
 const functions = ["sin", "cos", "tan", "asin", "acos", "atan", "log", "ln"];
 
 const map = {
@@ -70,14 +111,14 @@ const ParseStatus = Object.freeze({
 
 function parse(f) {
     let tokens = tokenize(f);
-    console.log("Tokens => " + tokens.join(" "));
+    //console.log("Tokens => " + tokens.join(" "));
     let i = 0, ok, stack = [];
     [ok, i] = parseExpression(tokens, i, stack, 0);
     if (!ok) return { success: ParseStatus.INVALID_EXPRESSION, value: i };
     
     let post = getPostfixNotation(tokens);
     if (post.success !== ParseStatus.SUCCESS) return { success: post.success, value: 0 };
-    console.log("Postfix notation => " + post.result.join(" "));
+    //console.log("Postfix notation => " + post.result.join(" "));
     
     let res = evaluatePostfix(post.result);
     
@@ -316,6 +357,7 @@ const isParenthesis = (token) => ["(", ")"].includes(token);
 const isSpace = (token) => /^\s+$/.test(token);
 const isDigit = (token) => /^\d+$/.test(token);
 const isConstant = (token) => token in constants;
+const sameFloat = (t1, t2) => Math.abs(t1-t2) < 0.001;
 
 function notifyError(message) {
     if (typeof window !== "undefined") {
@@ -325,18 +367,56 @@ function notifyError(message) {
     }
 }
 
+function evaluateSimple(expr) {
+    //Replace all constants with its equivalent numbers
+    for(let i = 0; i < expr.length; i++) {
+        if (isConstant(expr[i])) {
+            let insertStr = constants[expr[i]].toString();
+            expr = expr.slice(0, i) + expr.slice(i + 1);
+            expr = expr.slice(0, i) + insertStr + expr.slice(i);
+            i += insertStr.length-1;
+        }
+    }
+    //Use the default evaluation
+    try {
+        let result = eval(expr);
+        return {success: true, value : result};
+    } catch {
+        return {success: false, value : 0};
+    }
+}
+
 // for debug
 if (typeof window === "undefined") {
     main();
 }
 function main() {
-    console.log("File version: " + currentVersion);
-    for (let i =0; i < testcase.length; i++) {
-        const result = parse(testcase[i]);
-        if (result.success !== ParseStatus.SUCCESS) {
-            console.log(`Failed parsing "${testcase[i]}": ${result.success}: ${result.value}`);
-        } else {
-            console.log(testcase[i] + " = " + result.value);
+    for (let i=0; i < testcase.length; ++i) {
+        let t = testcase[i];
+        let result = parse(t[0]);
+        
+        if(t[1].isValid) {
+            let solution = evaluateSimple(t[1].solution);
+            if (!solution.success || isNaN(solution.value)) {
+                console.error(`Solution at testcase[${i}] could not be converted to float!: ${t[0].solution}`);
+                return;
+            }
+            
+            if (result.success !== ParseStatus.SUCCESS || sameFloat(result.value, solution.value)) {
+                console.error(`Failed at testcase[${i}]: ${t[0]}`);
+                return;
+            } else {
+                console.log(`PASSED: ${t[0]} = ${t[1].solution}`);
+            }
+        }
+        else {
+            if (result.success !== ParseStatus.INVALID_EXPRESSION) {
+                console.error(`Failed to detect an invalid expression by parseExpression: ${result.success}`);
+                return;
+            } else {
+                console.log(`PASSED: ${t[0]} is invalid`);
+            }
         }
     }
+    console.log("Every testcase is passed!");
 }
