@@ -12,8 +12,6 @@
 ビルドの都合上、リポジトリを分けました。[こちら](https://github.com/TrueRyoB/Nangokusoft-assignment-other/blob/main/README.md)にて詳細をご確認ください。
 
 # 戦略
-JSファイル同期に失敗<br>
-・ビルドに反映されているファイルのバージョン確認方法を確立する (達成)<br>
-・初期関数呼び出しにalertをつけていつの段階で停止しているか特定する<br>
-・修正する<br>
-・数式解析機能がちゃんと動いているか確認する<br>
+・test caseを不正と正攻で分ける<br>
+・高速parse装置を作る<br>
+・関数の演算記号化に挑む<br>
