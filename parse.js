@@ -1,29 +1,25 @@
 const testcase = [
-    ["log(100)", { solution: "2", isValid: true }],
+    ["-1", { solution: "-1", isValid: true }],
+    ["10-10*10", { solution: "-90", isValid: true }],
+    ["10*10-10", { solution: "90", isValid: true }],
     ["sin(π/2)", { solution: "1", isValid: true }],
+    ["acoscosacos(((1)))", { solution: "0", isValid: true }],
     ["cos(0)", { solution: "1", isValid: true }],
     ["tan(π / 4)", { solution: "1", isValid: true }],
     ["asin(1)", { solution: "π / 2", isValid: true }],
     ["acos(0)", { solution: "π / 2", isValid: true }],
     ["atan(1)", { solution: "π / 4", isValid: true }],
     ["ln(e)", { solution: "1", isValid: true }],
-    ["log(1000, 10)", { solution: "3", isValid: true }],
-    ["log(8, 2)", { solution: "3", isValid: true }],
     ["ln(e^2)", { solution: "2", isValid: true }],
     ["2 + 3 * (4 - 1)", { solution: "11", isValid: true }],
-    ["log(100, 10)", { solution: "2", isValid: true }],
-    //["-30e-2 + 10e", { solution: "-0.3+10e", isValid: true }], 指数表記のtestcaseを増やしたい
-    ["((1))acos((0))", { solution: "π", isValid: true }],
+    ["((1))acos((0))", { solution: "π/2", isValid: true }],
+    ["log(10, 1000)", { solution: "3", isValid: true }],
     ["", { solution: null, isValid: false }],
     [")", { solution: null, isValid: false }],
     ["(", { solution: null, isValid: false }],
     ["()", { solution: null, isValid: false }],
     ["(())", { solution: null, isValid: false }],
     ["(0)(())", { solution: null, isValid: false }],
-    ["sin(asin(0))", { solution: null, isValid: false }],
-    ["sin(sin(sin(sin(0))))", { solution: null, isValid: false }],
-    ["50 cos(50 cos(50 cos(π)))", { solution: null, isValid: false }],
-    ["ln30", { solution: null, isValid: false }],
     ["π +", { solution: null, isValid: false }],
     ["+ 2", { solution: null, isValid: false }],
     ["log()", { solution: null, isValid: false }],
@@ -32,7 +28,7 @@ const testcase = [
     ["log(100, )", { solution: null, isValid: false }],
     ["ln()", { solution: null, isValid: false }],
     ["cos((", { solution: null, isValid: false }],
-    ["atan(1, 2)", { solution: null, isValid: false }],
+    ["atan(1, 2)", { solution: null, isValid: false }], //TODO: commaの登場をvalidateする関数を設ける (atan2 / logで++で、カンマで--)
     ["abc **", { solution: null, isValid: false }],
     ["5 + * 2", { solution: null, isValid: false }],
     ["++e", { solution: null, isValid: false }],
@@ -53,35 +49,37 @@ const testcase = [
     ["log(log(log(1000))", { solution: null, isValid: false }],
     ["sin(x + cos(y + tan(z))", { solution: null, isValid: false }],
     ["acos(cos(asin(sin(π / 2))))))", { solution: null, isValid: false }],
-    ["log(8, log(1000, 10", { solution: null, isValid: false }]
+    ["log(8, log(1000, 10", { solution: null, isValid: false }],
+    ["log(100)", { solution: "2", isValid: true }],
+    ["log(10, 1000)", { solution: "3", isValid: true }],
+    ["log(2, 8)", { solution: "3", isValid: true }],
+    ["log(10, 100)", { solution: "2", isValid: true }],
+    //["-30e-2 + 10e", { solution: "-0.3+10e", isValid: true }], //TODO: 指数表記のtestcaseを増やしたい atan2に自動変換もしたい
 ];
 
-const currentVersion = "02:41";
+const currentVersion = "19:44";
 const functions = ["sin", "cos", "tan", "asin", "acos", "atan", "log", "ln"];
 
-const map = {
-    "+" : 1,
-    "-": 1,
-    "*" : 2,
-    "/" : 2,
-    "%" : 2,
-    "**" : 3,
-};
-
 const operators = {
-    "+": { arity: 2, fn: (a, b) => a + b },
-    "-": { arity: 2, fn: (a, b) => a - b },
-    "*": { arity: 2, fn: (a, b) => a * b },
-    "/": { arity: 2, fn: (a, b) => a / b },
-    "%": { arity: 2, fn: (a, b) => ((a % b) + b) % b },
-    "**": { arity: 2, fn: (a, b) => a ** b }, //TODO: **のassociativityを考慮して変更する
-    "sin": { arity: 1, fn: (a) => Math.sin(a) },
-    "cos": { arity: 1, fn: (a) => Math.cos(a) },
-    "tan": { arity: 1, fn: (a) => Math.tan(a) },
-    "asin": { arity: 1, fn: (a) => Math.asin(a) },
-    "acos": { arity: 1, fn: (a) => Math.acos(a) },
-    "atan": { arity: 1, fn: (a) => Math.atan(a) },
-    "ln": { arity: 1, fn: (a) => Math.log(a) },
+    "(" : { precedence: 0, arity: 0, fn: (a) => a},
+    "[" : { precedence: 0, arity: 0, fn: (a) => a},
+    ")" : { precedence: 0, arity: 0, fn: (a) => a},
+    "]" : { precedence: 0, arity: 0, fn: (a) => a},
+    "+": { precedence: 1, arity: 2, fn: (a, b) => a + b },
+    "-": { precedence: 1, arity: 2, fn: (a, b) => a - b },
+    "*": { precedence: 2, arity: 2, fn: (a, b) => a * b },
+    "/": { precedence: 2,  arity: 2, fn: (a, b) => a / b },
+    "%": { precedence: 2, arity: 2, fn: (a, b) => ((a % b) + b) % b },
+    "**": { precedence: 3, arity: 2, fn: (a, b) => a ** b }, //TODO: **のassociativityを考慮して変更する
+    "sin": { precedence: 4, arity: 1, fn: (a) => Math.sin(a) },
+    "cos": { precedence: 4, arity: 1, fn: (a) => Math.cos(a) },
+    "tan": { precedence: 4,  arity: 1, fn: (a) => Math.tan(a) },
+    "asin": { precedence: 4, arity: 1, fn: (a) => Math.asin(a) },
+    "acos": { precedence: 4, arity: 1, fn: (a) => Math.acos(a) },
+    "atan": { precedence: 4, arity: 1, fn: (a) => Math.atan(a) },
+    //"log": { precedence: 5, arity: 1, fn: (a) => Math.log(a) / Math.log(10) }, //TODO: log (a,b)と log aの2パターンに対応する (operatorの有無・,の処理など) 
+    "log": { precedence: 5, arity: 2, fn: (a, b) => Math.log(b) / Math.log(a) },
+    "ln": { precedence: 5, arity: 1, fn: (a) => Math.log(a) },
 };
 
 const constants = {
@@ -89,7 +87,7 @@ const constants = {
     "e" : { value : Math.E },
 };
 
-const isOperatorSymbol = (token) => ["+", "-", "*", "/", "**", "%"].includes(token);
+const isOperatorSymbol = (token) => ["+", "-", "*", "/", "**", "%"].includes(token) || ["^"].includes(token);
 
 const ParseStatus = Object.freeze({
     SUCCESS: "success",
@@ -99,6 +97,7 @@ const ParseStatus = Object.freeze({
     CONSECUTIVE_CONSTANT: "consecutive_constant",
     UNPAIRED_OPERANT: "unpaired_operant",
     INVALID_PARENTHESIS: "invalid_parenthesis",
+    MISSING_PARAMETERS: "missing_parameters",
     FAILURE: "failure",
 });
 
@@ -111,7 +110,7 @@ const ParseStatus = Object.freeze({
 
 function parse(f) {
     let tokens = tokenize(f);
-    //console.log("Tokens => " + tokens.join(" "));
+    // console.log("Tokens => " + tokens.join(" "));
     let i = 0, ok, stack = [];
     [ok, i] = parseExpression(tokens, i, stack, 0);
     if (!ok) return { success: ParseStatus.INVALID_EXPRESSION, value: i };
@@ -156,7 +155,6 @@ function evaluatePostfix (post) {
     if(numStack.length > 1) return { success: ParseStatus.UNPAIRED_OPERANT, result: 0 };
     return { success: ParseStatus.SUCCESS, result: numStack[0] };
 }
-
 function getPostfixNotation(tokens) {
     let opStack = [];
     let outStack = [];
@@ -170,8 +168,13 @@ function getPostfixNotation(tokens) {
         // Assume that the rest is all operational symbols
         else {
             
+            // -1. discard irrelevant symbols
+            if ([","].includes(t)) {
+                continue;
+            }
+            
             // 0. push an open bracket to opStack no matter what
-            if (["(", "["].includes(t)) {
+            if (isOpenBracket(t)) {
                 opStack.push(t);
                 continue;
             }
@@ -185,8 +188,6 @@ function getPostfixNotation(tokens) {
                     return { success: ParseStatus.UNMATCHED_BRACKET, result: null };
                 }
                 opStack.pop();
-                // push the subsequent function operator as well if there exists one
-                if (opStack.length > 0 && functions.includes(opStack[opStack.length - 1])) outStack.push(opStack.pop());
                 continue;
             }
             
@@ -196,17 +197,13 @@ function getPostfixNotation(tokens) {
                 continue;
             }
             
-            if (! (t in map)) {
-                notifyError(`Error: token ${t} is not registered to the precedence map!`);
+            if (! (t in operators)) {
+                notifyError(`Error: token ${t} is not registered to the operators' list!`);
                 return { success: ParseStatus.UNREGISTERED_TOKEN, result: null };
             }
             
-            // 3. Push to the appropriate stack //TODO: 間違った設計かも
-            // let shouldPushToOutput = opStack.length > 0 && map[t] >= map[opStack[opStack.length - 1]];
-            // if (shouldPushToOutput) outStack.push(t);
-            // else opStack.push(t);
-            
-            let shouldPushPrevOp = opStack.length > 0 && map[opStack[opStack.length-1]] >= map[t];
+            // 3. Push to the appropriate stack
+            let shouldPushPrevOp = !isOpenBracket(t) && opStack.length > 0 && !isOpenBracket(opStack[opStack.length-1]) && operators[opStack[opStack.length-1]].precedence >= operators[t].precedence;
             if (shouldPushPrevOp) outStack.push(opStack.pop());
             opStack.push(t);
         }
@@ -217,52 +214,52 @@ function getPostfixNotation(tokens) {
     
     return { success: ParseStatus.SUCCESS, result: outStack };
 }
-
 function parseExpression(tokens, i, stack, count) {
-    if (i >= tokens.length) return [tokens.length > 0 && stack.length === 0, i, stack, count];
+    if (i >= tokens.length) return [tokens.length > 0 && stack.length === 0 && !isOperatorSymbol(tokens[tokens.length-1]) && tokens[tokens.length-1] !== ",", i, stack, count];
 
     // Numbers
     if (isNumber(tokens[i]) || isConstant(tokens[i])) {
         const pre = tokens[i-1];
 
-        if (i === 0 || !(isNumber(pre) || isConstant(pre))) return parseExpression(tokens, i+1, stack, count);
+        if (i === 0 || !(isNumber(pre) || isConstant(pre)) || pre === ",") return parseExpression(tokens, i+1, stack, count);
         return [false, i, stack, count];
     }
 
     // Operator symbols
     if (isOperatorSymbol(tokens[i])) {
         const pre = tokens[i-1];
-        if (i === 0 || !isOperatorSymbol(pre)) return parseExpression(tokens, i+1, stack, count);
+        if (i !== 0 && (!isOperatorSymbol(pre) || functions.includes(pre))) return parseExpression(tokens, i+1, stack, count);
         return [false, i, stack, count];
     }
+    
+    // functions
+    if (functions.includes(tokens[i])) {
+        return parseExpression(tokens, i+1, stack, count);
+    }
 
-    if (["(", "["].includes(tokens[i])) {
+    // Brackets
+    if (isOpenBracket(tokens[i])) {
         stack.push(tokens[i]);
         return parseExpression(tokens, i+1, stack, count);
     }
 
     if ([")", "]"].includes(tokens[i])) {
+        if (i > 0 && tokens[i-1] === ",") return [false, i, stack, count];
+        
         const closers = { ")": "(", "]": "[" };
-        //console.log("index: " + i + ", stack.length: " + stack.length + ", count: " + count); //TODO:消す
         if (stack.length === 0 || stack[stack.length-1] !== closers[tokens[i]] || i === 0 || tokens[i-1] === closers[tokens[i]]) return [false, i, stack, count];
         stack.pop();
         if (count === 0) return parseExpression(tokens, i+1, stack, 0);
         return [true, i + 1, stack, count];
     }
-
-    // trig's and ln
-    if (functions.includes(tokens[i])) {
-        if (!["(", "["].includes(tokens[++i])) return [false, i, stack, count];
-        stack.push(tokens[i]);
-        let ok, _stack, _count;
-        [ok, i, _stack, _count] = parseExpression(tokens, i+1, stack, count+1);
-        if (i >= tokens.length) return [ok && _stack.length === 0, i, _stack, _count-1];
-        return parseExpression(tokens, i, _stack, _count-1);
+    
+    // Comma
+    if (tokens[i] === ",") {
+        return parseExpression(tokens, i+1, stack, 0);
     }
 
     return [false, i];
 }
-
 function tokenize(s) {
     let i = 0, n = s.length;
     const tokens = [];
@@ -296,14 +293,17 @@ function tokenize(s) {
 
         // operator symbols
         if (isOperatorSymbol(s[i])) {
-            if (s[i] === "-" && (tokens.length === 0 || ["(", "["].includes(tokens[tokens.length - 1]))) tokens.push("0");
+            if (s[i] === "-" && (tokens.length === 0 || isOpenBracket(tokens[tokens.length - 1]))) tokens.push("0");
             
             if (s[i] === "*" && i+1 < n && s[i+1] === "*") {
                 tokens.push("**");
                 i += 2;
+            } else if (s[i] === "^") {
+                tokens.push("**");
+                i += 1;
             } else {
                 tokens.push(s[i]);
-                i++;
+                i += 1;
             }
             continue;
         }
@@ -339,6 +339,13 @@ function tokenize(s) {
             i++;
             continue;
         }
+        
+        // comma
+        if (s[i] === ",") {
+            tokens.push(s[i]);
+            ++i;
+            continue;
+        }
 
         // the rest (should not be called... lol)
         notifyError(`Warning: contains an invalid character "${s[i]}"`);
@@ -349,16 +356,15 @@ function tokenize(s) {
     return tokens;
 }
 
-
 // helper methods
 const isNumber = (token) => !isNaN(token);
 const isSquareBracket = (token) => ["[", "]"].includes(token);
 const isParenthesis = (token) => ["(", ")"].includes(token);
+const isOpenBracket = (token) => ["(", "["].includes(token);
 const isSpace = (token) => /^\s+$/.test(token);
 const isDigit = (token) => /^\d+$/.test(token);
 const isConstant = (token) => token in constants;
 const sameFloat = (t1, t2) => Math.abs(t1-t2) < 0.001;
-
 function notifyError(message) {
     if (typeof window !== "undefined") {
         alert(message);
@@ -366,12 +372,11 @@ function notifyError(message) {
         //console.error(message);
     }
 }
-
 function evaluateSimple(expr) {
     //Replace all constants with its equivalent numbers
     for(let i = 0; i < expr.length; i++) {
         if (isConstant(expr[i])) {
-            let insertStr = constants[expr[i]].toString();
+            let insertStr = constants[expr[i]].value.toString();
             expr = expr.slice(0, i) + expr.slice(i + 1);
             expr = expr.slice(0, i) + insertStr + expr.slice(i);
             i += insertStr.length-1;
@@ -385,7 +390,6 @@ function evaluateSimple(expr) {
         return {success: false, value : 0};
     }
 }
-
 // for debug
 if (typeof window === "undefined") {
     main();
@@ -398,12 +402,12 @@ function main() {
         if(t[1].isValid) {
             let solution = evaluateSimple(t[1].solution);
             if (!solution.success || isNaN(solution.value)) {
-                console.error(`Solution at testcase[${i}] could not be converted to float!: ${t[0].solution}`);
+                console.error(`Solution at testcase[${i}] could not be converted to float!: ${t[1].solution}`);
                 return;
             }
             
-            if (result.success !== ParseStatus.SUCCESS || sameFloat(result.value, solution.value)) {
-                console.error(`Failed at testcase[${i}]: ${t[0]}`);
+            if (result.success !== ParseStatus.SUCCESS || !sameFloat(result.value, solution.value)) {
+                console.error(`Failed at testcase[${i}]: ${t[0]} : ${result.success} : ${result.value}`);
                 return;
             } else {
                 console.log(`PASSED: ${t[0]} = ${t[1].solution}`);
