@@ -12,6 +12,5 @@
 ビルドの都合上、リポジトリを分けました。[こちら](https://github.com/TrueRyoB/Nangokusoft-assignment-other/blob/main/README.md)にて詳細をご確認ください。
 
 # 戦略
-・test caseを不正と正攻で分ける<br>
-・高速parse装置を作る<br>
-・関数の演算記号化に挑む<br>
+・正規表現でlnのparseExpressionに挑む<br>
+・test caseを全部突破できるように魔改造する<br>
