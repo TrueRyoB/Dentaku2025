@@ -1,4 +1,5 @@
 const maxResults = 10;
+const saveKey = "history";
 
 let previousResult = '';
 let previousFormula = '';
@@ -136,9 +137,27 @@ function readFormulaField() {
   }
 
   const formulaToBeCopied = `${formulaRaw} = ${solution.value}`;
+  
+  let urlStr = "";
+  for(let i=0; i < maxResults; ++i) {
+    const ele = arrRes[(arrIndex+i)%maxResults];
+    if (ele != null) urlStr += ele;
+  }
+  saveToHash(saveKey, urlStr);
 
   resultsArea.prepend(newResult);
   arrIndex = (arrIndex + maxResults + 1) % maxResults;
   arrRes[arrIndex] = formulaToBeCopied;
   previousFormula = formulaRaw;
+}
+
+function loadFromHash(key) {
+  const hashParams = new URLSearchParams(location.hash.slice(1));
+  return hashParams.get(key);
+}
+
+function saveToHash(key, value) {
+  const hashParams = new URLSearchParams(location.hash.slice(1));
+  hashParams.set(key, value);
+  location.hash = hashParams.toString();
 }
