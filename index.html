@@ -46,6 +46,14 @@
       flex-shrink: 0;
     }
 
+    header button h1 {
+      text-decoration: none;
+    }
+
+    header button h1:hover {
+      text-decoration: underline;
+    }
+
     main {
       flex-grow: 1; /* 追加 */
       padding: 2em;
@@ -126,7 +134,9 @@
 </head>
 <body class = "container">
   <header>
-    <h1>計算式を入力...</h1>
+    <button onclick="window.open('https://x.com/deep_nap_engine/status/1911382531712098813', '_blank')">
+      <h1>計算式を入力...</h1>
+    </button>
   </header>
 
   <main>
