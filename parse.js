@@ -56,7 +56,7 @@ const testcase = [
     ["log(8, log(1000, 10", { solution: null, isValid: false }]
 ];
 
-const currentVersion = "19:44";
+const currentVersion = "02:41";
 const functions = ["sin", "cos", "tan", "asin", "acos", "atan", "log", "ln"];
 
 const map = {
