@@ -8,94 +8,91 @@ let arrRes = [];
 let arrIndex = 0;
 
 // For debugging
-window.addEventListener("load", () => {
-  const storedVersion = localStorage.getItem("appVersion");
+if(typeof window !== "undefined") {
+  window.addEventListener("load", () => {
+    const storedVersion = localStorage.getItem("appVersion");
 
-  if (storedVersion === null || storedVersion !== currentVersion) {
-    alert(`New JS file of "${currentVersion}" is loaded!`);
-    localStorage.setItem("appVersion", currentVersion);
-  }
-  loadResultOnRead();
-});
+    if (storedVersion === null || storedVersion !== currentVersion) {
+      alert(`New JS file of "${currentVersion}" is loaded!`);
+      localStorage.setItem("appVersion", currentVersion);
+    }
+    loadResultOnRead();
+  });
 
-document.addEventListener("keydown", function(event) {
-  const isBodyFocused = document.activeElement === document.body;
 
-  if (isBodyFocused && event.key === "Tab") {
-    event.preventDefault();
-    document.getElementById("formula-field").focus();
-  }
-});
+  document.addEventListener("keydown", function (event) {
+    const isBodyFocused = document.activeElement === document.body;
 
-document.getElementById("formula-field").addEventListener("keydown", function (event) {
-  if (event.key === "Space" || event.key === " ") {
+    if (isBodyFocused && event.key === "Tab") {
+      event.preventDefault();
+      document.getElementById("formula-field").focus();
+    }
+  });
+
+  document.getElementById("formula-field").addEventListener("keydown", function (event) {
+    if (event.key === "Space" || event.key === " ") {
 
       const value = document.getElementById("formula-field").value;
       if (previousResult !== '' && typeof value === "string" && value.trim() === "") {
-          event.preventDefault();
-          document.getElementById("formula-field").value = previousResult;
+        event.preventDefault();
+        document.getElementById("formula-field").value = previousResult;
       }
-  }
-  else if (event.key === "Enter") 
-  {
-    event.preventDefault();
-    readFormulaField();
-  }
-  else if (event.key === "Tab")
-  {
-    event.preventDefault();
-    const value = document.getElementById("formula-field").value;
-    if(previousFormula !== '' && typeof value == "string" && value.trim() === "")
-    {
-      document.getElementById("formula-field").value = previousFormula;
-    }
-  }
-  else if (["I", "i"].includes(event.key)) {
-    const input = document.getElementById("formula-field");
-
-    const cursorPos = input.selectionStart;
-    const value = input.value;
-    
-    const last = value.slice(0, cursorPos).slice(-1);
-
-    if (["p", "P"].includes(last)) {
+    } else if (event.key === "Enter") {
       event.preventDefault();
-      input.value = value.slice(0, cursorPos - 1) + "π" + value.slice(cursorPos);
-      input.setSelectionRange(cursorPos, cursorPos);
+      readFormulaField();
+    } else if (event.key === "Tab") {
+      event.preventDefault();
+      const value = document.getElementById("formula-field").value;
+      if (previousFormula !== '' && typeof value == "string" && value.trim() === "") {
+        document.getElementById("formula-field").value = previousFormula;
+      }
+    } else if (["I", "i"].includes(event.key)) {
+      const input = document.getElementById("formula-field");
+
+      const cursorPos = input.selectionStart;
+      const value = input.value;
+
+      const last = value.slice(0, cursorPos).slice(-1);
+
+      if (["p", "P"].includes(last)) {
+        event.preventDefault();
+        input.value = value.slice(0, cursorPos - 1) + "π" + value.slice(cursorPos);
+        input.setSelectionRange(cursorPos, cursorPos);
+      }
     }
-  }
-});
+  });
 
 
 // When a calculation form is submitted
-document.getElementById("submit").addEventListener("click", async function () {
-  await readFormulaField();
-});
+  document.getElementById("submit").addEventListener("click", async function () {
+    await readFormulaField();
+  });
 
 // When results' elements are clicked
-document.getElementById("results-area").addEventListener("click", function (event) {
-  if (event.target && event.target.className === "result-item") {
-    
-    const positionalIndex = Array.from(document.getElementById("results-area").children).indexOf(event.target);
+  document.getElementById("results-area").addEventListener("click", function (event) {
+    if (event.target && event.target.className === "result-item") {
 
-    const index = (arrIndex - positionalIndex + maxResults) % maxResults;
-    
-    const formula = arrRes[index];
+      const positionalIndex = Array.from(document.getElementById("results-area").children).indexOf(event.target);
 
-    navigator.clipboard.writeText(formula).then(() => {
-      alert(`"${formula}" をクリップボードにコピーしました`);
-    }).catch(err => {
-      console.error("コピー失敗:", err);
-    });
-  }
-});
+      const index = (arrIndex - positionalIndex + maxResults) % maxResults;
+
+      const formula = arrRes[index];
+
+      navigator.clipboard.writeText(formula).then(() => {
+        alert(`"${formula}" をクリップボードにコピーしました`);
+      }).catch(err => {
+        console.error("コピー失敗:", err);
+      });
+    }
+  });
 
 // When a tweet button is clicked
-document.getElementById("reportBtn").addEventListener("click", function () {
-  const text = encodeURIComponent("#2025電卓　(開発者はこのタグを不定期に検索することでデバッグに取り掛かります！)");
-  const url = `https://twitter.com/intent/tweet?text=${text}`;
-  window.open(url, "_blank");
-});
+  document.getElementById("reportBtn").addEventListener("click", function () {
+    const text = encodeURIComponent("#2025電卓　(開発者はこのタグを不定期に検索することでデバッグに取り掛かります！)");
+    const url = `https://twitter.com/intent/tweet?text=${text}`;
+    window.open(url, "_blank");
+  });
+}
 
 // Get a string representing a timestamp (self-explanatory tho)
 function getCurrentTimestamp() {
@@ -155,13 +152,16 @@ function pushResult(formula, solution, timestamp) {
   arrRes[arrIndex] = `${formula} = ${solution}`;
 }
 
-function loadResultOnRead() {
-  let key = loadFromHash(saveKey);
+function loadResultOnRead(key = null) {
+  
+  if(key == null) key = loadFromHash(saveKey);
   if(key === null || typeof key !== "string" || key.trim() === "") return;
   
   let count = 0,  n = key.length, l = 0, r = 0, e = 0;
   
-  const timestamp = "(??:??:??)";
+  console.log(`n: ${n}`);
+  
+  const timestamp = "??:??:??";
   
   while (count <= maxResults && r < n) {
     while (r < n && key[r] !== borderChar) {
@@ -169,13 +169,23 @@ function loadResultOnRead() {
       ++r;
     }
     if (r >= n) return;
+    console.log(`r: ${r}`);
     const fm = key.slice(l, e);
     const sl = key.slice(e+1, r);
+    ++r;
     l = r;
     ++count;
-    
-    pushResult(fm, sl, timestamp);
+    if (typeof window === "undefined") pushResulto(fm, sl, timestamp);
+    else pushResult(fm, sl, timestamp);
   }
+}
+
+if (typeof window === "undefined") {
+  loadResultOnRead("50+50 = 100;30+30 = 60;40+40 = 80;");
+}
+
+function pushResulto(fm, sl, timestamp){
+  console.log(`${fm} = ${sl} (${timestamp})`);
 }
 
 function loadFromHash(key) {
