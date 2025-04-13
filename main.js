@@ -1,5 +1,6 @@
 const maxResults = 10;
 const saveKey = "history";
+const borderChar = ";";
 
 let previousResult = '';
 let previousFormula = '';
@@ -14,6 +15,7 @@ window.addEventListener("load", () => {
     alert(`New JS file of "${currentVersion}" is loaded!`);
     localStorage.setItem("appVersion", currentVersion);
   }
+  loadResultOnRead();
 });
 
 document.addEventListener("keydown", function(event) {
@@ -122,41 +124,62 @@ function readFormulaField() {
     return;
   }
   document.getElementById("formula-field").value = "";
-  
-  const resultsArea = document.getElementById("results-area");
-  previousResult = solution.value;
+  pushResult(formulaRaw, solution.value, getCurrentTimestamp());
+  updateURLOnRead();
+}
 
-  const newResult = document.createElement("div");
-  const timestamp = getCurrentTimestamp();
-  newResult.textContent = `📌${formulaRaw} = ${solution.value} (${timestamp})`;
-  newResult.className = "result-item";
-
-  if (resultsArea.children.length >= maxResults) 
-  {
-    resultsArea.removeChild(resultsArea.lastChild);
-  }
-
-  const formulaToBeCopied = `${formulaRaw} = ${solution.value}`;
-  
+function updateURLOnRead() {
   let urlStr = "";
   for(let i=0; i < maxResults; ++i) {
     const ele = arrRes[(arrIndex+i)%maxResults];
     if (ele != null) {
       urlStr += ele;
-      urlStr += "\s";
+      urlStr += borderChar;
     }
   }
   saveToHash(saveKey, urlStr);
+}
 
+function pushResult(formula, solution, timestamp) {
+  const resultsArea = document.getElementById("results-area");
+  const newResult = document.createElement("div");
+  newResult.textContent = `📌${formula} = ${solution} (${timestamp})`;
+  newResult.className = "result-item";
+  if (resultsArea.children.length >= maxResults)
+  {
+    resultsArea.removeChild(resultsArea.lastChild);
+  }
   resultsArea.prepend(newResult);
+  previousResult = solution;
   arrIndex = (arrIndex + maxResults + 1) % maxResults;
-  arrRes[arrIndex] = formulaToBeCopied;
-  previousFormula = formulaRaw;
+  arrRes[arrIndex] = `${formula} = ${solution}`;
+}
+
+function loadResultOnRead() {
+  let key = loadFromHash(saveKey);
+  if(key === null || typeof key !== "string" || key === "") return;
+  
+  let count = 0,  n = key.length, l = 0, r = 0, e = 0;
+  
+  const timestamp = "(??:??:??)";
+  
+  while (count <= maxResults && r < n) {
+    while (key[r] !== borderChar) {
+      if (key[r] === "=") e = r; 
+      ++r;
+    }
+    if (r >= n) return;
+    const fm = key.slice(l, e);
+    const sl = key.slice(e+1, r);
+    l = r;
+    
+    pushResult(fm, sl, timestamp);
+  }
 }
 
 function loadFromHash(key) {
   const hashParams = new URLSearchParams(location.hash.slice(1));
-  return hashParams.get(key);
+  return decodeURIComponent(hashParams.get(key));
 }
 
 function saveToHash(key, value) {
