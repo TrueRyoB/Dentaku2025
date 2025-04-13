@@ -47,13 +47,18 @@ document.getElementById("formula-field").addEventListener("keydown", function (e
       document.getElementById("formula-field").value = previousFormula;
     }
   }
-  else if (event.key === "I" || event.key === "i") 
-  {
-    let value = document.getElementById("formula-field").value;
-    if (["p", "P"].includes(value[value.length - 1])) {
+  else if (["I", "i"].includes(event.key)) {
+    const input = document.getElementById("formula-field");
+
+    const cursorPos = input.selectionStart;
+    const value = input.value;
+    
+    const last = value.slice(0, cursorPos).slice(-1);
+
+    if (["p", "P"].includes(last)) {
       event.preventDefault();
-      value = value.slice(0, value.length - 1) + "π";
-      document.getElementById("formula-field").value = value;
+      input.value = value.slice(0, cursorPos - 1) + "π" + value.slice(cursorPos);
+      input.setSelectionRange(cursorPos, cursorPos);
     }
   }
 });
