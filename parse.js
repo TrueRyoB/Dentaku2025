@@ -57,7 +57,7 @@ const testcase = [
     //["-30e-2 + 10e", { solution: "-0.3+10e", isValid: true }], //TODO: 指数表記のtestcaseを増やしたい atan2に自動変換もしたい
 ];
 
-const currentVersion = "07:46";
+const currentVersion = "08:19";
 const functions = ["sin", "cos", "tan", "asin", "acos", "atan", "log", "ln"];
 
 const operators = {
