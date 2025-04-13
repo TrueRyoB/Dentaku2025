@@ -1,4 +1,21 @@
-const currentVersion = "18:49";
+const testcase = [
+    // "",
+    // ")",
+    // "(",
+    // "()",
+    // "(())",
+    // "(0)(())",
+    // "sin(10+10)",
+    // "((1))asin((1))",
+    // "sin(asin(0))",
+    // "sin(sin(sin(sin(0))))",
+    // "50 cos(50 cos(50 cos(π)))",
+    // "ln30",
+    // "log[10](30)",
+    // "-30e-2 + 10e",
+];
+
+const currentVersion = "19:44";
 const functions = ["sin", "cos", "tan", "asin", "acos", "atan", "log", "ln"];
 
 const map = {
@@ -45,47 +62,26 @@ const ParseStatus = Object.freeze({
 });
 
 (function() {
-    window.parseLib = window.parseLib || {};
-    window.parseLib.parse = parse;
+    if (typeof window !== "undefined") {
+        window.parseLib = window.parseLib || {};
+        window.parseLib.parse = parse;
+    }
 })();
 
 function parse(f) {
     let tokens = tokenize(f);
-    let i = 0;
-    let ok = true;
-    while (i < tokens.length && ok)
-    {
-        [ok, i] = parseExpression(tokens, i);
-    }
-    if (!ok) return { success: ParseStatus.INVALID_EXPRESSION, value: 0 };
-    
-    if (!validateParenthesis(tokens)) return { success: ParseStatus.INVALID_PARENTHESIS, value: 0 };
+    console.log("Tokens => " + tokens.join(" "));
+    let i = 0, ok, stack = [];
+    [ok, i] = parseExpression(tokens, i, stack, 0);
+    if (!ok) return { success: ParseStatus.INVALID_EXPRESSION, value: i };
     
     let post = getPostfixNotation(tokens);
     if (post.success !== ParseStatus.SUCCESS) return { success: post.success, value: 0 };
-    console.log(post.result.join(" "));
+    console.log("Postfix notation => " + post.result.join(" "));
     
     let res = evaluatePostfix(post.result);
     
     return { success: res.success, value: res.success === ParseStatus.SUCCESS ? res.result : 0 };
-}
-
-function validateParenthesis(tokens) {
-    let stack = [];
-    const openers = { "(": ")", "[": "]" };
-    const closers = { ")": "(", "]": "[" };
-
-    for (let t of tokens) {
-        if (t in openers)
-            stack.push(t);
-        else if (t in closers) {
-            if (stack.length === 0 || stack[stack.length - 1] !== closers[t]) {
-                return false;
-            }
-            stack.pop();
-        }
-    }
-    return stack.length === 0;
 }
 
 function evaluatePostfix (post) {
@@ -102,7 +98,7 @@ function evaluatePostfix (post) {
             
             let op = operators[t];
             if (!op) {
-                alert(`Error: unrecognized token "${t}"!`);
+                notifyError(`Error: unrecognized token "${t}"!`);
                 return { success: ParseStatus.UNREGISTERED_TOKEN, result: 0 };
             }
 
@@ -127,7 +123,7 @@ function getPostfixNotation(tokens) {
     for (let i = 0; i < tokens.length; i++) {
         let t = tokens[i];
         
-        if (isNumber(t)) {
+        if (isNumber(t) || isConstant(t)) {
             outStack.push(t);
         }
         // Assume that the rest is all operational symbols
@@ -144,7 +140,7 @@ function getPostfixNotation(tokens) {
                 let opening = t === ")" ? "(" : "[";
                 while (opStack.length > 0 && opStack[opStack.length - 1] !== opening) outStack.push(opStack.pop());
                 if (opStack.length === 0) {
-                    alert(`Error: unmatched closing parenthesis!"`);
+                    notifyError(`Error: unmatched closing parenthesis!"`);
                     return { success: ParseStatus.UNMATCHED_BRACKET, result: null };
                 }
                 opStack.pop();
@@ -160,7 +156,7 @@ function getPostfixNotation(tokens) {
             }
             
             if (! (t in map)) {
-                alert(`Error: token "${t} is not registered to the precedence map!"`);
+                notifyError(`Error: token ${t} is not registered to the precedence map!`);
                 return { success: ParseStatus.UNREGISTERED_TOKEN, result: null };
             }
             
@@ -181,59 +177,46 @@ function getPostfixNotation(tokens) {
     return { success: ParseStatus.SUCCESS, result: outStack };
 }
 
-function parseExpression(tokens, i) {
-    if (i >= tokens.length) return [false, i];
+function parseExpression(tokens, i, stack, count) {
+    if (i >= tokens.length) return [tokens.length > 0 && stack.length === 0, i, stack, count];
 
     // Numbers
     if (isNumber(tokens[i]) || isConstant(tokens[i])) {
         const pre = tokens[i-1];
-        return [i === 0 || !(isNumber(pre) || isConstant(pre)), i + 1];
+
+        if (i === 0 || !(isNumber(pre) || isConstant(pre))) return parseExpression(tokens, i+1, stack, count);
+        return [false, i, stack, count];
     }
-    
+
     // Operator symbols
     if (isOperatorSymbol(tokens[i])) {
         const pre = tokens[i-1];
-        return [i === 0 || !isOperatorSymbol(pre), i + 1];
+        if (i === 0 || !isOperatorSymbol(pre)) return parseExpression(tokens, i+1, stack, count);
+        return [false, i, stack, count];
     }
-    
-    // Pairs
-    if (isParenthesis(tokens[i]) || isSquareBracket(tokens[i])){
-        return [true, i + 1];
+
+    if (["(", "["].includes(tokens[i])) {
+        stack.push(tokens[i]);
+        return parseExpression(tokens, i+1, stack, count);
     }
-    
-    // log(...)
-    if (tokens[i] === "log") {
-        i++;
-        let ok;
-        if (tokens[i] === "[") {
-            // log[base](value)
-            i++;
-            [ok, i] = parseExpression(tokens, i);
-            if (!ok || tokens[i] !== "]") return [false, i];
-            i++;
-            if (tokens[i] !== "(") return [false, i];
-            i++;
-            [ok, i] = parseExpression(tokens, i);
-            if (!ok || tokens[i] !== ")") return [false, i];
-            return [true, i + 1];
-        } else if (tokens[i] === "(") {
-            // log(value)
-            i++;
-            [ok, i] = parseExpression(tokens, i);
-            if (!ok || tokens[i] !== ")") return [false, i];
-            return [true, i + 1];
-        } else {
-            return [false, i]; // Invalid log (intolerant to log x bs)
-        }
+
+    if ([")", "]"].includes(tokens[i])) {
+        const closers = { ")": "(", "]": "[" };
+        //console.log("index: " + i + ", stack.length: " + stack.length + ", count: " + count); //TODO:消す
+        if (stack.length === 0 || stack[stack.length-1] !== closers[tokens[i]] || i === 0 || tokens[i-1] === closers[tokens[i]]) return [false, i, stack, count];
+        stack.pop();
+        if (count === 0) return parseExpression(tokens, i+1, stack, 0);
+        return [true, i + 1, stack, count];
     }
 
     // trig's and ln
     if (functions.includes(tokens[i])) {
-        if (tokens[++i] !== "(") return [false, i];
-        let ok;
-        [ok, i] = parseExpression(tokens, ++i);
-        if (!ok || tokens[i] !== ")") return [false, i];
-        return [true, i + 1];
+        if (!["(", "["].includes(tokens[++i])) return [false, i, stack, count];
+        stack.push(tokens[i]);
+        let ok, _stack, _count;
+        [ok, i, _stack, _count] = parseExpression(tokens, i+1, stack, count+1);
+        if (i >= tokens.length) return [ok && _stack.length === 0, i, _stack, _count-1];
+        return parseExpression(tokens, i, _stack, _count-1);
     }
 
     return [false, i];
@@ -264,6 +247,7 @@ function tokenize(s) {
             
             if (j !== -310 && j < exponentIndex + 2) j = exponentIndex-1;
 
+            if (tokens.length > 0 && tokens[tokens.length-1] === ")") tokens.push("*");
             tokens.push(s.slice(i, j));
             i = j;
             continue;
@@ -285,16 +269,16 @@ function tokenize(s) {
 
         // parenthesis
         if (isParenthesis(s[i])) {
-            if (i > 0 && s[i] === "(" && (isDigit(s[i-1]) || isConstant(s[i-1])) || (tokens.length > 0 && tokens[tokens.length - 1] === ")"))   tokens.push("*");
+            if (s[i] === "(" && tokens.length > 0 && (tokens[tokens.length-1] === ")" || isNumber(tokens[tokens.length-1]) || isConstant(tokens[tokens.length-1]))) tokens.push("*");
             tokens.push(s[i]);
-            if (i+1 < n && s[i] === ")" && (isDigit(s[i+1]) || isConstant(s[i+1]))) tokens.push("*");
             i++;
             continue;
         }
         
-        // functions
+        // functions TODO: 変更する 特に二個parameter取る系をに注意する (間に挟むようにする) (logも(, )にする？)
         let matchedFunc = functions.find(fn => s.slice(i, i + fn.length) === fn);
         if (matchedFunc) {
+            if (tokens.length > 0 && (isNumber(tokens[tokens.length-1]) || isConstant(tokens[tokens.length-1]) || [")", "]"].includes(tokens[tokens.length-1])))   tokens.push("*")
             tokens.push(matchedFunc);
             i += matchedFunc.length;
             continue;
@@ -302,21 +286,21 @@ function tokenize(s) {
         
         // constants
         if (isConstant(s[i])) {
-            if (i > 0 && isNumber(s[i-1])) tokens.push("*");
+            if (tokens.length > 0 && isNumber(tokens[tokens.length-1])) tokens.push("*");
             tokens.push(s[i]);
             i++;
             continue;
         }
         
-        // lame
-        // if (isSquareBracket(s[i])) {
-        //     tokens.push(s[i]);
-        //     i++;
-        //     continue;
-        // }
+        // square bracket
+        if (isSquareBracket(s[i])) {
+            tokens.push(s[i]);
+            i++;
+            continue;
+        }
 
         // the rest (should not be called... lol)
-        alert(`Warning: contains an invalid character "${s[i]}"`);
+        notifyError(`Warning: contains an invalid character "${s[i]}"`);
         tokens.push(s[i]);
         i++;
     }
@@ -332,3 +316,27 @@ const isParenthesis = (token) => ["(", ")"].includes(token);
 const isSpace = (token) => /^\s+$/.test(token);
 const isDigit = (token) => /^\d+$/.test(token);
 const isConstant = (token) => token in constants;
+
+function notifyError(message) {
+    if (typeof window !== "undefined") {
+        alert(message);
+    } else {
+        //console.error(message);
+    }
+}
+
+// for debug
+if (typeof window === "undefined") {
+    main();
+}
+function main() {
+    console.log("File version: " + currentVersion);
+    for (let i =0; i < testcase.length; i++) {
+        const result = parse(testcase[i]);
+        if (result.success !== ParseStatus.SUCCESS) {
+            console.log(`Failed parsing "${testcase[i]}": ${result.success}: ${result.value}`);
+        } else {
+            console.log(testcase[i] + " = " + result.value);
+        }
+    }
+}
