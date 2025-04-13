@@ -7,7 +7,7 @@ let previousFormula = '';
 let arrRes = [];
 let arrIndex = 0;
 
-// For debugging
+// For web build
 if(typeof window !== "undefined") {
   window.addEventListener("load", () => {
     const storedVersion = localStorage.getItem("appVersion");
@@ -22,8 +22,9 @@ if(typeof window !== "undefined") {
 
   document.addEventListener("keydown", function (event) {
     const isBodyFocused = document.activeElement === document.body;
+    const isNotTextField = !(document.activeElement instanceof HTMLInputElement || document.activeElement instanceof HTMLTextAreaElement);
 
-    if (isBodyFocused && event.key === "Tab") {
+    if (isBodyFocused && isNotTextField && event.key === "Tab") {
       event.preventDefault();
       document.getElementById("formula-field").focus();
     }
@@ -31,7 +32,6 @@ if(typeof window !== "undefined") {
 
   document.getElementById("formula-field").addEventListener("keydown", function (event) {
     if (event.key === "Space" || event.key === " ") {
-
       const value = document.getElementById("formula-field").value;
       if (previousResult !== '' && typeof value === "string" && value.trim() === "") {
         event.preventDefault();
@@ -161,6 +161,7 @@ function pushResult(formula, solution, timestamp) {
   previousResult = solution;
   arrIndex = (arrIndex + maxResults + 1) % maxResults;
   arrRes[arrIndex] = `${formula} = ${solution}`;
+  animateColor(newResult, "#FFF176", "#68FFE5", 2000);
 }
 
 function loadResultOnRead(key = null) {
@@ -186,17 +187,13 @@ function loadResultOnRead(key = null) {
     ++r;
     l = r;
     ++count;
-    if (typeof window === "undefined") pushResulto(fm, sl, timestamp);
-    else pushResult(fm, sl, timestamp);
+    if (typeof window !== "undefined") pushResult(fm, sl, timestamp);
+    else console.log(`${fm} = ${sl} (${timestamp})`);
   }
 }
 
 if (typeof window === "undefined") {
   loadResultOnRead("50+50 = 100;30+30 = 60;40+40 = 80;");
-}
-
-function pushResulto(fm, sl, timestamp){
-  console.log(`${fm} = ${sl} (${timestamp})`);
 }
 
 function loadFromHash(key) {
@@ -208,4 +205,34 @@ function saveToHash(key, value) {
   const hashParams = new URLSearchParams(location.hash.slice(1));
   hashParams.set(key, value);
   location.hash = hashParams.toString();
+}
+
+function interpolateColor(color1, color2, factor) {
+  const c1 = parseInt(color1.slice(1), 16);
+  const c2 = parseInt(color2.slice(1), 16);
+
+  const r1 = (c1 >> 16) & 0xff, g1 = (c1 >> 8) & 0xff, b1 = c1 & 0xff;
+  const r2 = (c2 >> 16) & 0xff, g2 = (c2 >> 8) & 0xff, b2 = c2 & 0xff;
+
+  const r = Math.round(r1 + (r2 - r1) * factor);
+  const g = Math.round(g1 + (g2 - g1) * factor);
+  const b = Math.round(b1 + (b2 - b1) * factor);
+
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
+function animateColor(div, startColor, endColor, duration) {
+  const start = performance.now();
+
+  function update(now) {
+    const elapsed = now - start;
+    const factor = Math.min(elapsed / duration, 1);
+    div.style.color = interpolateColor(startColor, endColor, factor);
+
+    if (factor < 1) {
+      requestAnimationFrame(update);
+    }
+  }
+
+  requestAnimationFrame(update);
 }
