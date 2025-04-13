@@ -1,4 +1,6 @@
 const testcase = [
+    ["(2**2)**3", {solution: "64", isValid: true}],
+    ["2**2**3", {solution: "256", isValid: true}],
     ["-1", { solution: "-1", isValid: true }],
     ["10-10*10", { solution: "-90", isValid: true }],
     ["10*10-10", { solution: "90", isValid: true }],
@@ -14,6 +16,10 @@ const testcase = [
     ["2 + 3 * (4 - 1)", { solution: "11", isValid: true }],
     ["((1))acos((0))", { solution: "π/2", isValid: true }],
     ["log(10, 1000)", { solution: "3", isValid: true }],
+    ["log(100)", { solution: "2", isValid: true }],
+    ["log(10, 1000)", { solution: "3", isValid: true }],
+    ["log(2, 8)", { solution: "3", isValid: true }],
+    ["log(10, 100)", { solution: "2", isValid: true }],
     ["", { solution: null, isValid: false }],
     [")", { solution: null, isValid: false }],
     ["(", { solution: null, isValid: false }],
@@ -50,14 +56,10 @@ const testcase = [
     ["sin(x + cos(y + tan(z))", { solution: null, isValid: false }],
     ["acos(cos(asin(sin(π / 2))))))", { solution: null, isValid: false }],
     ["log(8, log(1000, 10", { solution: null, isValid: false }],
-    ["log(100)", { solution: "2", isValid: true }],
-    ["log(10, 1000)", { solution: "3", isValid: true }],
-    ["log(2, 8)", { solution: "3", isValid: true }],
-    ["log(10, 100)", { solution: "2", isValid: true }],
     //["-30e-2 + 10e", { solution: "-0.3+10e", isValid: true }], //TODO: 指数表記のtestcaseを増やしたい atan2に自動変換もしたい
 ];
 
-const currentVersion = "11:13";
+const currentVersion = "19:44";
 const functions = ["sin", "cos", "tan", "asin", "acos", "atan", "log", "ln"];
 
 const operators = {
@@ -128,14 +130,14 @@ function evaluatePostfix (post) {
     let numStack = [];
     for(let i = 0; i < post.length; i++) {
         let t = post[i];
-        
+
         if (isNumber(t)) {
             t = parseFloat(t);
             numStack.push(t);
         } else if (isConstant(t)) {
             numStack.push(constants[t].value);
         } else {
-            
+
             let op = operators[t];
             if (!op) {
                 notifyError(`Error: unrecognized token "${t}"!`);
@@ -144,10 +146,10 @@ function evaluatePostfix (post) {
 
             if (numStack.length < op.arity) return { success: ParseStatus.UNPAIRED_OPERANT, result: 0 };
 
-            
+
             const args = [];
             for (let j = 0; j < op.arity; j++) args.unshift(numStack.pop());
-            
+
             const result = op.fn(...args);
             numStack.push(result);
         }
@@ -155,6 +157,7 @@ function evaluatePostfix (post) {
     if(numStack.length > 1) return { success: ParseStatus.UNPAIRED_OPERANT, result: 0 };
     return { success: ParseStatus.SUCCESS, result: numStack[0] };
 }
+
 function getPostfixNotation(tokens) {
     let opStack = [];
     let outStack = [];
@@ -196,15 +199,32 @@ function getPostfixNotation(tokens) {
                 opStack.push(t);
                 continue;
             }
-            
-            if (! (t in operators)) {
-                notifyError(`Error: token ${t} is not registered to the operators' list!`);
-                return { success: ParseStatus.UNREGISTERED_TOKEN, result: null };
-            }
-            
+
             // 3. Push to the appropriate stack
-            let shouldPushPrevOp = !isOpenBracket(t) && opStack.length > 0 && !isOpenBracket(opStack[opStack.length-1]) && operators[opStack[opStack.length-1]].precedence >= operators[t].precedence;
-            if (shouldPushPrevOp) outStack.push(opStack.pop());
+            while (opStack.length > 0 && !isOpenBracket(opStack[opStack.length - 1])) {
+                
+                if (!opStack[opStack.length-1] in operators) {
+                    notifyError(`Error: token ${t} is not registered to the operators' list!`);
+                    return { success: ParseStatus.UNREGISTERED_TOKEN, result: null };
+                }
+                let topOp = opStack[opStack.length - 1];
+            
+                if (t === "**") {
+                    if (operators[topOp].precedence > operators[t].precedence) {
+                        outStack.push(opStack.pop());
+                    } else {
+                        break;
+                    }
+                }
+                
+                else {
+                    if (operators[topOp].precedence >= operators[t].precedence) {
+                        outStack.push(opStack.pop());
+                    } else {
+                        break;
+                    }
+                }
+            }
             opStack.push(t);
         }
     }
