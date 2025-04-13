@@ -21,10 +21,10 @@ if(typeof window !== "undefined") {
 
 
   document.addEventListener("keydown", function (event) {
-    const isBodyFocused = document.activeElement === document.body;
-    const isNotTextField = !(document.activeElement instanceof HTMLInputElement || document.activeElement instanceof HTMLTextAreaElement);
-
-    if (isBodyFocused && isNotTextField && event.key === "Tab") {
+    const activeEl = document.activeElement;
+    const isTextField = activeEl instanceof HTMLInputElement || activeEl instanceof HTMLTextAreaElement;
+    
+    if (!isTextField && event.key === "Tab") {
       event.preventDefault();
       document.getElementById("formula-field").focus();
     }
@@ -94,7 +94,6 @@ if(typeof window !== "undefined") {
   });
 }
 
-// Get a string representing a timestamp (self-explanatory tho)
 function getCurrentTimestamp() {
   const now = new Date();
   const hours = String(now.getHours()).padStart(2, '0');
@@ -103,7 +102,6 @@ function getCurrentTimestamp() {
   return `${hours}:${minutes}:${seconds}`;
 }
 
-// Apply a player input
 function readFormulaField() {
   const formulaRaw = document.getElementById("formula-field").value;
 
@@ -126,7 +124,7 @@ function readFormulaField() {
     return;
   }
   document.getElementById("formula-field").value = "";
-  pushResult(formulaRaw, solution.value, getCurrentTimestamp());
+  pushResult(formulaRaw, solution.value, getCurrentTimestamp(), true);
   updateURLOnRead();
 }
 
@@ -148,7 +146,7 @@ function deleteAllResults() {
   resultsArea.innerHTML = "";
 }
 
-function pushResult(formula, solution, timestamp) {
+function pushResult(formula, solution, timestamp, shouldAnimate = false) {
   const resultsArea = document.getElementById("results-area");
   const newResult = document.createElement("div");
   newResult.textContent = `📌${formula} = ${solution} (${timestamp})`;
@@ -161,7 +159,9 @@ function pushResult(formula, solution, timestamp) {
   previousResult = solution;
   arrIndex = (arrIndex + maxResults + 1) % maxResults;
   arrRes[arrIndex] = `${formula} = ${solution}`;
-  animateColor(newResult, "#FFF176", "#68FFE5", 2000);
+  if (shouldAnimate) {
+    animateColor(newResult, "#FFD54F", "#68FFE5", 2000);
+  }
 }
 
 function loadResultOnRead(key = null) {
