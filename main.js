@@ -52,7 +52,7 @@ document.getElementById("formula-field").addEventListener("keydown", function (e
     let value = document.getElementById("formula-field").value;
     if (["p", "P"].includes(value[value.length - 1])) {
       event.preventDefault();
-      value = value.slice(0, value.length - 2) + "π";
+      value = value.slice(0, value.length - 1) + "π";
       document.getElementById("formula-field").value = value;
     }
   }
