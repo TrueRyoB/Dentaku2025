@@ -130,7 +130,7 @@ function readFormulaField() {
 
 function updateURLOnRead() {
   let urlStr = "";
-  for (let i = 0; i < maxResults; ++i) {
+  for (let i = maxResults-1; i >= 0; --i) {
     const ele = arrRes[(arrIndex + i) % maxResults];
     if (ele != null) {
       urlStr += ele;
