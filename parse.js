@@ -15,7 +15,7 @@ const testcase = [
     // "-30e-2 + 10e",
 ];
 
-const currentVersion = "19:44";
+const currentVersion = "01:37";
 const functions = ["sin", "cos", "tan", "asin", "acos", "atan", "log", "ln"];
 
 const map = {
