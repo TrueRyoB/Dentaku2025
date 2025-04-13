@@ -106,17 +106,21 @@ function getCurrentTimestamp() {
 // Apply a player input
 function readFormulaField() {
   const formulaRaw = document.getElementById("formula-field").value;
-  
-  if (typeof formulaRaw !== "string") 
-  {
+
+  if (typeof formulaRaw !== "string") {
     alert("The given value is not a string: " + value);
     return;
   }
 
+  if (["clear", "c"].includes(formulaRaw.trim().toLowerCase())) {
+    deleteAllResults();
+    updateURLOnRead();
+    return;
+  }
+
   const solution = window.parseLib.parse(formulaRaw);
-  
-  if (solution.success !== ParseStatus.SUCCESS)
-  {
+
+  if (solution.success !== ParseStatus.SUCCESS) {
     alert("Error occured: " + solution.success);
     return;
   }
@@ -127,14 +131,19 @@ function readFormulaField() {
 
 function updateURLOnRead() {
   let urlStr = "";
-  for(let i=0; i < maxResults; ++i) {
-    const ele = arrRes[(arrIndex+i)%maxResults];
+  for (let i = 0; i < maxResults; ++i) {
+    const ele = arrRes[(arrIndex + i) % maxResults];
     if (ele != null) {
       urlStr += ele;
       urlStr += borderChar;
     }
   }
   saveToHash(saveKey, urlStr);
+}
+
+function deleteAllResults() {
+  const resultsArea = document.getElementById("results-area");
+  resultsArea.innerHTML = "";
 }
 
 function pushResult(formula, solution, timestamp) {
