@@ -9,6 +9,7 @@ let arrIndex = 0;
 
 // For web build
 if(typeof window !== "undefined") {
+  // on load
   window.addEventListener("load", () => {
     const storedVersion = localStorage.getItem("appVersion");
 
@@ -18,35 +19,35 @@ if(typeof window !== "undefined") {
     }
     loadResultOnRead();
   });
-
-
+  // Tab key
   document.addEventListener("keydown", function (event) {
-    const isTextField = document.activeElement instanceof HTMLInputElement || document.activeElement instanceof HTMLTextAreaElement;
-    
     if (event.key === "Tab") {
       event.preventDefault();
-      if (isTextField) {
-        const value = document.getElementById("formula-field").value;
-        if (previousFormula !== '' && typeof value == "string" && value.trim() === "") {
-          document.getElementById("formula-field").value = previousFormula;
-        }
-      } else {
-        document.getElementById("formula-field").focus();
-      }
+      document.getElementById("formula-field").focus();
     }
   });
-
+  // Key conversion
   document.getElementById("formula-field").addEventListener("keydown", function (event) {
     if (event.key === "Space" || event.key === " ") {
       const value = document.getElementById("formula-field").value;
-      if (previousResult !== '' && typeof value === "string" && value.trim() === "") {
-        event.preventDefault();
-        document.getElementById("formula-field").value = previousResult;
+
+      if (event.shiftKey) {
+        if (previousFormula !== '' && typeof value == "string" && value.trim() === "") {
+          document.getElementById("formula-field").value = previousFormula;
+        }
+      } 
+      else {
+        if (previousResult !== '' && typeof value === "string" && value.trim() === "") {
+          event.preventDefault();
+          document.getElementById("formula-field").value = previousResult;
+        }
       }
-    } else if (event.key === "Enter") {
+    } 
+    else if (event.key === "Enter") {
       event.preventDefault();
       readFormulaField();
-    } else if (["I", "i"].includes(event.key)) {
+    } 
+    else if (["I", "i"].includes(event.key)) {
       const input = document.getElementById("formula-field");
 
       const cursorPos = input.selectionStart;
@@ -61,14 +62,11 @@ if(typeof window !== "undefined") {
       }
     }
   });
-
-
-// When a calculation form is submitted
+  // Submitting a formula
   document.getElementById("submit").addEventListener("click", async function () {
     await readFormulaField();
   });
-
-// When results' elements are clicked
+  // Clicking an element
   document.getElementById("results-area").addEventListener("click", function (event) {
     if (event.target && event.target.className === "result-item") {
 
@@ -85,8 +83,7 @@ if(typeof window !== "undefined") {
       });
     }
   });
-
-// When a tweet button is clicked
+  // Reporting an issue
   document.getElementById("reportBtn").addEventListener("click", function () {
     const text = encodeURIComponent("#2025電卓　(開発者はこのタグを不定期に検索することでデバッグに取り掛かります！)");
     const url = `https://twitter.com/intent/tweet?text=${text}`;
@@ -130,14 +127,43 @@ function readFormulaField() {
 
 function updateURLOnRead() {
   let urlStr = "";
-  for (let i = maxResults-1; i >= 0; --i) {
-    const ele = arrRes[(arrIndex + i) % maxResults];
-    if (ele != null) {
-      urlStr += ele;
-      urlStr += borderChar;
+  for (let i = 0; i < maxResults; ++i) {
+    const el = arrRes[(arrIndex+1+i)%maxResults]; //arrIndex+1 indicates the most bottom element
+    
+    if (el === null || typeof el !== "string" || el === "") {
+      break;
     }
+    urlStr += (el + borderChar);
   }
   saveToHash(saveKey, urlStr);
+}
+
+function loadResultOnRead(key = null) {
+
+  key ??= loadFromHash(saveKey);
+  if(key === null || typeof key !== "string" || key.trim() === "") return;
+
+  let count = 0,  n = key.length, l = 0, r = 0, e = 0;
+
+  console.log(`n: ${n}`);
+
+  const timestamp = "??:??:??";
+
+  while (count <= maxResults && r < n) {
+    while (r < n && key[r] !== borderChar) {
+      if (key[r] === "=") e = r;
+      ++r;
+    }
+    if (r >= n) return;
+    console.log(`r: ${r}`);
+    const fm = key.slice(l, e);
+    const sl = key.slice(e+1, r);
+    ++r;
+    l = r;
+    ++count;
+    if (typeof window !== "undefined") pushResult(fm, sl, timestamp);
+    else console.log(`${fm} = ${sl} (${timestamp})`);
+  }
 }
 
 function deleteAllResults() {
@@ -164,34 +190,6 @@ function pushResult(formula, solution, timestamp, shouldAnimate = false) {
   }
 }
 
-function loadResultOnRead(key = null) {
-  
-  if(key == null) key = loadFromHash(saveKey);
-  if(key === null || typeof key !== "string" || key.trim() === "") return;
-  
-  let count = 0,  n = key.length, l = 0, r = 0, e = 0;
-  
-  console.log(`n: ${n}`);
-  
-  const timestamp = "??:??:??";
-  
-  while (count <= maxResults && r < n) {
-    while (r < n && key[r] !== borderChar) {
-      if (key[r] === "=") e = r; 
-      ++r;
-    }
-    if (r >= n) return;
-    console.log(`r: ${r}`);
-    const fm = key.slice(l, e);
-    const sl = key.slice(e+1, r);
-    ++r;
-    l = r;
-    ++count;
-    if (typeof window !== "undefined") pushResult(fm, sl, timestamp);
-    else console.log(`${fm} = ${sl} (${timestamp})`);
-  }
-}
-
 if (typeof window === "undefined") {
   loadResultOnRead("50+50 = 100;30+30 = 60;40+40 = 80;");
 }
@@ -202,6 +200,11 @@ function loadFromHash(key) {
 }
 
 function saveToHash(key, value) {
+  if (value.trim() === "") {
+    history.replaceState(null, null, location.pathname + location.search);
+    return;
+  }
+  
   const hashParams = new URLSearchParams(location.hash.slice(1));
   hashParams.set(key, value);
   location.hash = hashParams.toString();
