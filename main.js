@@ -32,7 +32,8 @@ if(typeof window !== "undefined") {
       const value = document.getElementById("formula-field").value;
 
       if (event.shiftKey) {
-        if (previousFormula !== '' && typeof value == "string" && value.trim() === "") {
+        if (previousFormula !== '' && typeof value === "string" && value.trim() === "") {
+          event.preventDefault();
           document.getElementById("formula-field").value = previousFormula;
         }
       } 
@@ -131,7 +132,7 @@ function updateURLOnRead() {
     const el = arrRes[(arrIndex+1+i)%maxResults]; //arrIndex+1 indicates the most bottom element
     
     if (el === null || typeof el !== "string" || el === "") {
-      break;
+      continue;
     }
     urlStr += (el + borderChar);
   }
