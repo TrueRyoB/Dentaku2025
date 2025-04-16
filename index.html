@@ -15,13 +15,13 @@
       padding: 0;
     }
 
-    * { /*追加*/
+    * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
 
-    .container { /*追加*/
+    .container {
       display: flex;
       flex-direction: column;
       min-height: 100vh;
@@ -47,10 +47,6 @@
       flex-shrink: 0;
     }
 
-    header {
-      padding_bottom: 4em;
-    }
-
     header button {
       all: unset;
       cursor: pointer;
@@ -71,9 +67,10 @@
     }
 
     main {
-      flex-grow: 1; /* 追加 */
+      flex-grow: 1;
+      margin-top: 5em;
       padding: 2em;
-      overflow-y: auto; /* 追加 */
+      overflow-y: auto;
       background: #212121;
     }
     
@@ -86,8 +83,8 @@
     }
     
     .input-group {
-      display: flex; /* 横並びにする！ */
-      align-items: center; /* 縦中央揃え */
+      display: flex;
+      align-items: center;
       width: 100%;
     }
     
@@ -102,7 +99,7 @@
     }
     
     .input-group button {
-      margin-left: -3em; /* input の padding-right と同じ値で被せる */
+      margin-left: -3em;
       height: 2em;
       width: 2em;
       border: none;
@@ -126,10 +123,10 @@
       margin-top: 1em;
       padding: 1em;
       background: #0000000;
-      position: relative; /* 追加 */
-      width: 100%; /* 追加 */
-      height: 100%; /* 親要素に合わせるらしい */
-      overflow: hidden; /* 追加 */
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
     }
     #results-area:empty {
       display: none;
