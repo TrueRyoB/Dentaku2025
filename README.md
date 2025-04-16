@@ -12,6 +12,4 @@
 ビルドの都合上、リポジトリを分けました。[こちら](https://github.com/TrueRyoB/Nangokusoft-assignment-other/blob/main/README.md)にて詳細をご確認ください。
 
 # 戦略
-・レイアウトとかを修正する+時間経過で黄色→緑色に染めるようにする<br>
-・atanとかlogを可変動引数関数にする(おそらく正規表現を用いる)<br>
-・test caseを全部突破できるように魔改造する<br>
+・レイアウトとかを修正する<br>
