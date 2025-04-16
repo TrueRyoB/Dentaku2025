@@ -12,6 +12,4 @@
 ビルドの都合上、リポジトリを分けました。[こちら](https://github.com/TrueRyoB/Nangokusoft-assignment-other/blob/main/README.md)にて詳細をご確認ください。
 
 # 戦略
-・関数を他にも入れる(absとかsindとかmaxとか)<br>
-・エラーに対処
-・使い方紹介を更新する<br>
+・エラーに対処<br>
