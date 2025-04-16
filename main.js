@@ -6,6 +6,7 @@ let previousResult = '';
 let previousFormula = '';
 let arrRes = [];
 let arrIndex = 0;
+let clickTime = 0;
 
 // For web build
 if(typeof window !== "undefined") {
@@ -30,20 +31,19 @@ if(typeof window !== "undefined") {
   document.getElementById("formula-field").addEventListener("keydown", function (event) {
     if (event.key === "Space" || event.key === " ") {
       const value = document.getElementById("formula-field").value;
-
-      if (event.shiftKey) {
-        if (previousFormula !== '' && typeof value === "string" && value.trim() === "") {
-          event.preventDefault();
-          document.getElementById("formula-field").value = previousFormula;
-        }
-      } 
-      else {
-        if (previousResult !== '' && typeof value === "string" && value.trim() === "") {
-          event.preventDefault();
-          document.getElementById("formula-field").value = previousResult;
-        }
+      
+      if (previousResult !== '' && typeof value === "string" && value.trim() === "") {
+        event.preventDefault();
+        document.getElementById("formula-field").value = previousResult;
       }
     } 
+    else if (["q", "Q"].includes(event.key)) {
+      const value = document.getElementById("formula-field").value;
+      if (previousFormula !== '' && typeof value === "string" && value.trim() === "") {
+        event.preventDefault();
+        document.getElementById("formula-field").value = previousFormula;
+      }
+    }
     else if (event.key === "Enter") {
       event.preventDefault();
       readFormulaField();
@@ -68,10 +68,22 @@ if(typeof window !== "undefined") {
     await readFormulaField();
   });
   // Clicking an element
-  document.getElementById("results-area").addEventListener("click", function (event) {
+  document.getElementById("results-area").addEventListener("mousedown", function (event) {
     if (event.target && event.target.className === "result-item") {
+      clickTime = Date.now();
+      const index = Array.from(document.getElementById("results-area").children).indexOf(event.target);
+      void VisualizeResultElement(index, 0, "#CCCCCC");
+      void VisualizeResultElement(index, 200, "#68FFE5");
+    }
+  });
+  document.getElementById("results-area").addEventListener("mouseup", function (event) {
+    if (event.target && event.target.className === "result-item") {
+      
+      let duration = Date.now() - clickTime;
+      if (duration >= 200) return;
 
       const positionalIndex = Array.from(document.getElementById("results-area").children).indexOf(event.target);
+      void VisualizeResultElement(positionalIndex, 0, "#68FFE5");
 
       const index = (arrIndex - positionalIndex + maxResults) % maxResults;
 
@@ -84,12 +96,18 @@ if(typeof window !== "undefined") {
       });
     }
   });
+  
   // Reporting an issue
   document.getElementById("reportBtn").addEventListener("click", function () {
     const text = encodeURIComponent("#2025電卓　(開発者はこのタグを不定期に検索することでデバッグに取り掛かります！)");
     const url = `https://twitter.com/intent/tweet?text=${text}`;
     window.open(url, "_blank");
   });
+}
+
+async function VisualizeResultElement(index, pauseDuration, color) {
+  await wait(pauseDuration);
+  Array.from(document.getElementById("results-area").children)[index].style.color = color;
 }
 
 function getCurrentTimestamp() {
@@ -162,7 +180,7 @@ function loadResultOnRead(key = null) {
     ++r;
     l = r;
     ++count;
-    if (typeof window !== "undefined") pushResult(fm, sl, timestamp);
+    if (typeof window !== "undefined") pushResult(fm, sl, timestamp, false);
     else console.log(`${fm} = ${sl} (${timestamp})`);
   }
 }
@@ -171,9 +189,12 @@ function deleteAllResults() {
   const resultsArea = document.getElementById("results-area");
   arrRes = [];
   resultsArea.innerHTML = "";
+  previousResult = '';
+  previousFormula = '';
 }
 
-function pushResult(formula, solution, timestamp, shouldAnimate = false) {
+function pushResult(formula, solution, timestamp, shouldAnimate) {
+  previousFormula = formula;
   const resultsArea = document.getElementById("results-area");
   const newResult = document.createElement("div");
   newResult.textContent = `📌${formula} = ${solution} (${timestamp})`;
@@ -187,7 +208,7 @@ function pushResult(formula, solution, timestamp, shouldAnimate = false) {
   arrIndex = (arrIndex + maxResults + 1) % maxResults;
   arrRes[arrIndex] = `${formula} = ${solution}`;
   if (shouldAnimate) {
-    animateColor(newResult, "#66F0D9", "#68FFE5", 2000);
+    animateColor(newResult, "#549385", "#68FFE5", 2000);
   }
 }
 
@@ -239,4 +260,7 @@ function animateColor(div, startColor, endColor, duration) {
   }
 
   requestAnimationFrame(update);
+}
+function wait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
