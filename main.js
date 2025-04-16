@@ -14,7 +14,7 @@ if(typeof window !== "undefined") {
   window.addEventListener("load", () => {
     const storedVersion = localStorage.getItem("appVersion");
 
-    if (storedVersion !== null || storedVersion !== currentVersion) {
+    if (storedVersion !== null && storedVersion !== currentVersion) {
       alert(`New JS file of "${currentVersion}" is loaded!`);
     }
     localStorage.setItem("appVersion", currentVersion);
