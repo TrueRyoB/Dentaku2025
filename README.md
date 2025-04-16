@@ -7,6 +7,7 @@
 課題1:<br>
 [このレポジトリ](https://github.com/TrueRyoB/Nangokusoft-assignment-1/tree/main)で設計を確認できます。<br>
 [このサイト](https://trueryob.github.io/Nangokusoft-assignment-1/)で実際に稼働しています。<br>
+操作方法・機能性は[このページ](https://x.com/deep_nap_engine/status/1911382531712098813)にて紹介・更新していきます。<br>
 <br>
 他の課題：<br>
 ビルドの都合上、リポジトリを分けました。[こちら](https://github.com/TrueRyoB/Nangokusoft-assignment-other/blob/main/README.md)にて詳細をご確認ください。<br>
