@@ -12,9 +12,6 @@
 ビルドの都合上、リポジトリを分けました。[こちら](https://github.com/TrueRyoB/Nangokusoft-assignment-other/blob/main/README.md)にて詳細をご確認ください。
 
 # 戦略
-・瞬間クリックの時のみコピーに変更<br>
-・invalid characterの表示数を減らす<br>
-・入力ホームの位置を変更+pushでのレイアウト変更を禁止<br>
-・関数を他にも入れる(absとか)<br>
+・関数を他にも入れる(absとかsindとかmaxとか)<br>
+・エラーに対処
 ・使い方紹介を更新する<br>
-・sindとかのdegree対応を実装する<br>
