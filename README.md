@@ -9,7 +9,10 @@
 [このサイト](https://trueryob.github.io/Nangokusoft-assignment-1/)で実際に稼働しています。<br>
 <br>
 他の課題：<br>
-ビルドの都合上、リポジトリを分けました。[こちら](https://github.com/TrueRyoB/Nangokusoft-assignment-other/blob/main/README.md)にて詳細をご確認ください。
+ビルドの都合上、リポジトリを分けました。[こちら](https://github.com/TrueRyoB/Nangokusoft-assignment-other/blob/main/README.md)にて詳細をご確認ください。<br>
 
-# 戦略
-・エラーに対処<br>
+# 問題
+現状、以下のtest caseを突破できていません。括弧をつけてあげたら動作します。<br>
+sinπ + 1 = 1<br>
+atantan1, 1 = 1<br>
+atanatan1, 1, π/4 = π/4<br>
