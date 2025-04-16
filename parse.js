@@ -43,13 +43,17 @@ const testcase = [
     ["atan 1*-2, (1/1)*2", { solution: "-π/4",isValid: true }],
     ["(sin0)", { solution: "0",isValid: true }],
     ["1*(cossin0)", { solution: "1",isValid: true }],
+    ["atan(tan(1), 1)", {solution: "1", isValid: true}],
+    ["maizen1+3", {solution: "0", isValid: false}],
+    ["ma1zen", {solution: "0", isValid: false}],
+    ["stop", {solution: "0", isValid: false}],
     
     // Impossible-to-pass
-    ["atantanπ, 1", {solution: "π", isValid: true}],
+    ["atantan1, 1", {solution: "1", isValid: true}],
     ["atanatan1, 1, π/4", {solution: "π/4", isValid: true}],
 ];
 
-const currentVersion = "21:43";
+const currentVersion = "19:44";
 const silent = true, loud = false;
 const functions = ["sin", "cos", "tan", "asin", "acos", "atan", "log", "ln"];
 
@@ -300,6 +304,7 @@ function tokenize(s) {
     let i = 0, n = s.length;
     const tokens = [];
     let bStack = [];
+    let invalidString = "";
 
     while (i < n) {
         // space
@@ -335,6 +340,8 @@ function tokenize(s) {
                 }
             }
             i++;
+            
+            invalidString = checkInvalidString(invalidString);
             continue;
         }
         // function +a
@@ -378,6 +385,7 @@ function tokenize(s) {
             if (tokens.length > 0 && tokens[tokens.length-1] === ")") tokens.push("*");
             tokens.push(str);
             i = j;
+            invalidString = checkInvalidString(invalidString);
             continue;
         }
 
@@ -393,6 +401,7 @@ function tokenize(s) {
                 tokens.push(s[i]);
                 i += 1;
             }
+            invalidString = checkInvalidString(invalidString);
             continue;
         }
         
@@ -409,6 +418,7 @@ function tokenize(s) {
             }
             tokens.push(matchedFunc);
             i += matchedFunc.length;
+            invalidString = checkInvalidString(invalidString);
             continue;
         }
         
@@ -431,6 +441,7 @@ function tokenize(s) {
             }
             tokens.push(s[i]);
             i++;
+            invalidString = checkInvalidString(invalidString);
             continue;
         }
         
@@ -438,6 +449,7 @@ function tokenize(s) {
         if (isSquareBracket(s[i])) {
             tokens.push(s[i]);
             i++;
+            invalidString = checkInvalidString(invalidString);
             continue;
         }
         
@@ -447,11 +459,15 @@ function tokenize(s) {
             tokens.push(s[i]);
             if (bStack[bStack.length-1] === "[")  tokens.push("[");
             ++i;
+            invalidString = checkInvalidString(invalidString);
             continue;
         }
 
         // the rest
-        notifyError(`Warning: contains an invalid character "${s[i]}"`);
+        invalidString += s[i];
+        if (i === n-1) {
+            invalidString = checkInvalidString(invalidString);
+        }
         tokens.push(s[i]);
         i++;
     }
@@ -474,7 +490,7 @@ const sameFloat = (t1, t2) => Math.abs(t1-t2) < 0.001;
 function notifyError(message) {
     if (typeof window !== "undefined") {
         alert(message);
-    } else {
+    } else if (!silent){
         console.error(message);
     }
 }
@@ -505,6 +521,12 @@ function evaluateSimple(expr) {
     } catch {
         return {success: false, value : 0};
     }
+}
+function checkInvalidString(invalidString) {
+    if (invalidString.length !== 0) {
+        notifyError(invalidString.length === 1 ? `Warning: contains an invalid character \"${invalidString}\"` : `Warning: contains an invalid string \"${invalidString}\"`);
+    }
+    return "";
 }
 // for debug
 if (typeof window === "undefined") {
