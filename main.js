@@ -208,7 +208,7 @@ function pushResult(formula, solution, timestamp, shouldAnimate) {
   arrIndex = (arrIndex + maxResults + 1) % maxResults;
   arrRes[arrIndex] = `${formula} = ${solution}`;
   if (shouldAnimate) {
-    animateColor(newResult, "#A4FCAB", "#68FFE5", 2000);
+    animateColor(newResult, "#A4FCAB", "#68FFE5", 600);
   }
 }
 
