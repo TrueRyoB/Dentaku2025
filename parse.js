@@ -60,7 +60,7 @@ const testcase = [
     ["atanatan1, 1, π/4", {solution: "π/4", isValid: true}],
 ];
 
-const currentVersion = "19:44";
+const currentVersion = "release 1.0";
 const silent = true, loud = false;
 const functions = ["sind", "cosd", "tand", "asind", "acosd", "atand", "atand2", 
     "sin", "cos", "tan", "asin", "acos", "atan", "atan2", "log", "log2", "ln", "max", "min", "abs"];
