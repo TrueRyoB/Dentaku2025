@@ -44,9 +44,16 @@ const testcase = [
     ["(sin0)", { solution: "0",isValid: true }],
     ["1*(cossin0)", { solution: "1",isValid: true }],
     ["atan(tan(1), 1)", {solution: "1", isValid: true}],
+    ["sind30", {solution: "1/2", isValid: true}],
+    ["max(3, -1)", {solution: "3", isValid: true}],
+    ["min3, -1", {solution: "-1", isValid: true}],
+    ["πeπeπ", {solution: "229.10711780970053", isValid: true}],
     ["maizen1+3", {solution: "0", isValid: false}],
     ["ma1zen", {solution: "0", isValid: false}],
     ["stop", {solution: "0", isValid: false}],
+    ["sin(π) + 1", {solution: "1", isValid: true}],
+    ["sinπ + 1", {solution: "1", isValid: true}],
+    ["sin(π + 1)", {solution: "-0.14112000805986735", isValid: true}],
     
     // Impossible-to-pass
     ["atantan1, 1", {solution: "1", isValid: true}],
@@ -55,7 +62,8 @@ const testcase = [
 
 const currentVersion = "19:44";
 const silent = true, loud = false;
-const functions = ["sin", "cos", "tan", "asin", "acos", "atan", "log", "ln"];
+const functions = ["sind", "cosd", "tand", "asind", "acosd", "atand", "atand2", 
+    "sin", "cos", "tan", "asin", "acos", "atan", "atan2", "log", "log2", "ln", "max", "min", "abs"];
 
 const operators = {
     "(" : { precedence: 0, arity: 0, fn: null, isotopes: null, isLeftAssociativity: true },
@@ -68,6 +76,13 @@ const operators = {
     "/": { precedence: 2,  arity: 2, fn: (a, b) => a / b, isotopes: null, isLeftAssociativity: true },
     "%": { precedence: 2, arity: 2, fn: (a, b) => ((a % b) + b) % b, isotopes: null, isLeftAssociativity: true },
     "**": { precedence: 3, arity: 2, fn: (a, b) => a ** b, isotopes: null, isLeftAssociativity: false},
+    "sind": { precedence: 4, arity: 1, fn: (a) => Math.sin(degToRad(a)), isotopes: null, isLeftAssociativity: true }, 
+    "cosd": { precedence: 4, arity: 1, fn: (a) => Math.cos(degToRad(a)), isotopes: null, isLeftAssociativity: true }, 
+    "tand": { precedence: 4,  arity: 1, fn: (a) => Math.tan(degToRad(a)), isotopes: null, isLeftAssociativity: true },
+    "asind": { precedence: 4, arity: 1, fn: (a) => radToDeg(Math.asin(a)), isotopes: null, isLeftAssociativity: true },
+    "acosd": { precedence: 4, arity: 1, fn: (a) => radToDeg(Math.acos(a)), isotopes: null, isLeftAssociativity: true },
+    "atand": { precedence: 4, arity: 1, fn: (a) => radToDeg(Math.atan(a)), isotopes: ["atand2"], isLeftAssociativity: true },
+    "atand2": { precedence: 4, arity: 2, fn: (a, b) => radToDeg(Math.atan2(a, b)), isotopes: null, isLeftAssociativity: true },
     "sin": { precedence: 4, arity: 1, fn: (a) => Math.sin(a), isotopes: null, isLeftAssociativity: true },
     "cos": { precedence: 4, arity: 1, fn: (a) => Math.cos(a), isotopes: null, isLeftAssociativity: true },
     "tan": { precedence: 4,  arity: 1, fn: (a) => Math.tan(a), isotopes: null, isLeftAssociativity: true },
@@ -78,6 +93,9 @@ const operators = {
     "log": { precedence: 5, arity: 1, fn: (a) => Math.log(a) / Math.log(10), isotopes: ["log2"], isLeftAssociativity: true }, 
     "log2": { precedence: 5, arity: 2, fn: (a, b) => Math.log(b) / Math.log(a), isotopes: null, isLeftAssociativity: true },
     "ln": { precedence: 5, arity: 1, fn: (a) => Math.log(a), isotopes: null, isLeftAssociativity: true },
+    "max": { precedence: 5, arity: 2, fn: (a, b) => (a >= b) ? a : b, isotopes: null, isLeftAssociativity: true },
+    "min": { precedence: 5, arity: 2, fn: (a, b) => (a <= b) ? a : b, isotopes: null, isLeftAssociativity: true },
+    "abs": { precedence: 5, arity: 1, fn: (a) => (a < 0) ? -a : a, isotopes: null, isLeftAssociativity: true },
 };
 
 const constants = {
@@ -121,7 +139,6 @@ function parse(f) {
     
     return { success: res.success, value: res.success === ParseStatus.SUCCESS ? res.result : 0 };
 }
-
 function evaluatePostfix (post) {
     let numStack = [];
     for(let i = 0; i < post.length; i++) {
@@ -424,7 +441,7 @@ function tokenize(s) {
         
         // constants
         if (isConstant(s[i])) {
-            if (tokens.length > 0 && isNumber(tokens[tokens.length-1])) tokens.push("*");
+            if (tokens.length > 0 && (isNumber(tokens[tokens.length-1]) || isConstant(tokens[tokens.length-1]))) tokens.push("*");
 
             if (tokens.length > 0) {
                 const peek = tokens[tokens.length - 1];
@@ -478,6 +495,8 @@ function tokenize(s) {
 }
 
 // helper methods
+const radToDeg = (number) => number * 180 / Math.PI;
+const degToRad = (number) => number * Math.PI / 180;
 const isNumber = (token) => !isNaN(token);
 const isSquareBracket = (token) => ["[", "]"].includes(token);
 const isParenthesis = (token) => ["(", ")"].includes(token);
