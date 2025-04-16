@@ -5,7 +5,7 @@
 
 # 提出物確認方法
 課題1:<br>
-このレポジトリで設計を確認できます。<br>
+[このレポジトリ](https://github.com/TrueRyoB/Nangokusoft-assignment-1/tree/main)で設計を確認できます。<br>
 [このサイト](https://trueryob.github.io/Nangokusoft-assignment-1/)で実際に稼働しています。<br>
 <br>
 他の課題：<br>
