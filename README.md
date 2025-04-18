@@ -1,3 +1,6 @@
+# 概要
+一行入力の計算機です。[このサイト](https://trueryob.github.io/Nangokusoft-assignment-1/)で実際に稼働しています。<br>
+
 # 問題
 現状、以下のtest caseを突破できていません。括弧をつけてあげたら動作します。<br>
 sinπ + 1 = 1<br>
