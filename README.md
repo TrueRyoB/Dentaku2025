@@ -16,19 +16,3 @@ txtファイルによる入力/出力に対応<br>
 一日一問等のイベント作成<br>
 操作方法紹介ページ解説<br>
 数式有効活用の例紹介ページ解説<br>
-
-
-
-問題：
-・JetBrainsがcsファイルのエラーを検出してくれなくなった。
-
-判明していること：
-・JetBrainsというText Editorを用いていること
-・Dotnetっていう開発環境を使っていること
-・dotnet new console -o RapidDebug
-・dotnet new slnの後にdotnet sln add RapidDebug.csprojを用いたこと
-・同ディレクトリ内のcsprojectファイルはいつも通り読み取れているらしい
-
-
-憶測
-・通常Unityなどでは動いているため、恐らく対象がC#ファイルだと認識できていない
