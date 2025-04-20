@@ -1,4 +1,4 @@
-# About
+# [About](https://trueryob.github.io/Dentaku2025/)
 For context, Dentaku stands for "calculator" in Japanese.
 
 # Issues
