@@ -1,5 +1,4 @@
 # About
-A single line calculator that is [active](https://trueryob.github.io/Calculator2025-JS/) here. <br>
 For context, Dentaku stands for "calculator" in Japanese.
 
 # Issues
