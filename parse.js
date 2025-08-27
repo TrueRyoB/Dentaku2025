@@ -54,6 +54,7 @@ const testcase = [
     ["sin(π) + 1", {solution: "1", isValid: true}],
     ["sinπ + 1", {solution: "1", isValid: true}],
     ["sin(π + 1)", {solution: "-0.14112000805986735", isValid: true}],
+    ["5!", {solution: "120", isValid: true}],
     
     // Impossible-to-pass
     ["atantan1, 1", {solution: "1", isValid: true}],
@@ -76,6 +77,7 @@ const operators = {
     "/": { precedence: 2,  arity: 2, fn: (a, b) => a / b, isotopes: null, isLeftAssociativity: true },
     "%": { precedence: 2, arity: 2, fn: (a, b) => ((a % b) + b) % b, isotopes: null, isLeftAssociativity: true },
     "**": { precedence: 3, arity: 2, fn: (a, b) => a ** b, isotopes: null, isLeftAssociativity: false},
+    "!": {precedence:3, arity:1, fn:(a) => factorial(a), isotopes: null, isLeftAssociativity: true},
     "sind": { precedence: 4, arity: 1, fn: (a) => Math.sin(degToRad(a)), isotopes: null, isLeftAssociativity: true }, 
     "cosd": { precedence: 4, arity: 1, fn: (a) => Math.cos(degToRad(a)), isotopes: null, isLeftAssociativity: true }, 
     "tand": { precedence: 4,  arity: 1, fn: (a) => Math.tan(degToRad(a)), isotopes: null, isLeftAssociativity: true },
@@ -103,7 +105,7 @@ const constants = {
     "e" : { value : Math.E },
 };
 
-const isOperatorSymbol = (token) => ["+", "-", "*", "/", "**", "%"].includes(token) || ["^"].includes(token);
+const isOperatorSymbol = (token) => ["+", "-", "*", "/", "**", "%", "!"].includes(token) || ["^"].includes(token);
 
 const ParseStatus = Object.freeze({
     SUCCESS: "success",
@@ -246,7 +248,7 @@ function getPostfixNotation(tokens) {
     return { success: ParseStatus.SUCCESS, result: outStack };
 }
 function parseExpression(tokens, i, stack, nest) {
-    if (i >= tokens.length) return [tokens.length > 0 && stack.length === 0 && !isOperatorSymbol(tokens[tokens.length-1]) && tokens[tokens.length-1] !== ",", i, stack, nest];
+    if (i >= tokens.length) return [tokens.length > 0 && stack.length === 0 && !(isOperatorSymbol(tokens[tokens.length-1] && operators[tokens[tokens.length-1].arity==2])) && tokens[tokens.length-1] !== ",", i, stack, nest];
 
     // Numbers
     if (isNumber(tokens[i]) || isConstant(tokens[i])) {
@@ -546,6 +548,38 @@ function checkInvalidString(invalidString) {
         notifyError(invalidString.length === 1 ? `Warning: contains an invalid character \"${invalidString}\"` : `Warning: contains an invalid string \"${invalidString}\"`);
     }
     return "";
+}
+function gamma(z) {
+    // Lanczos approximation coefficients
+    const p = [
+        676.5203681218851, -1259.1392167224028, 771.32342877765313,
+        -176.61502916214059, 12.507343278686905, -0.13857109526572012,
+        9.9843695780195716e-6, 1.5056327351493116e-7
+    ];
+    
+    if (z < 0.5) {
+        return Math.PI / (Math.sin(Math.PI * z) * gamma(1 - z));
+    }
+    
+    z -= 1;
+    let x = 0.99999999999980993;
+    
+    for (let i = 0; i < p.length; i++) {
+        x += p[i] / (z + i + 1);
+    }
+    
+    const t = z + p.length - 0.5;
+    return Math.sqrt(2 * Math.PI) * Math.pow(t, z + 0.5) * Math.exp(-t) * x;
+}
+
+function factorial(x) {
+    if (Number.isInteger(x) && x >= 0) {
+        // Integer case - use regular factorial
+        let result = 1;
+        for (let i = 2; i <= x; i++) result *= i;
+        return result;
+    }
+    return gamma(x + 1);
 }
 // for debug
 if (typeof window === "undefined") {
